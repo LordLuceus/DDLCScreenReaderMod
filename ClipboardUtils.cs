@@ -167,10 +167,10 @@ namespace DDLCScreenReaderMod
                     return text;
 
                 case TextType.MenuChoice:
-                    return $"Choice: {text}";
+                    return text;
 
                 case TextType.Menu:
-                    return $"Menu: {text}";
+                    return text;
 
                 case TextType.SystemMessage:
                     return $"System: {text}";

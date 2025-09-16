@@ -224,7 +224,7 @@ namespace DDLCScreenReaderMod
                     string buttonText = __instance.textObject.text;
                     if (ModConfig.Instance.EnableVerboseLogging)
                         ScreenReaderMod.Logger?.Msg($"Button focused: {buttonText}");
-                    ClipboardUtils.OutputGameText("", $"Button: {buttonText}", TextType.Menu);
+                    ClipboardUtils.OutputGameText("", buttonText, TextType.Menu);
                 }
             }
             catch (System.Exception ex)
