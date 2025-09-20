@@ -33,8 +33,6 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (!ModConfig.Instance.EnablePoemReading)
-                    return;
 
                 // Access the private poem field using reflection
                 var poemField = typeof(RenpyPoemUI).GetField("m_Poem",
@@ -43,16 +41,14 @@ namespace DDLCScreenReaderMod
 
                 if (poemField == null)
                 {
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Warning("Could not access poem field in RenpyPoemUI");
+                    ScreenReaderMod.Logger?.Warning("Could not access poem field in RenpyPoemUI");
                     return;
                 }
 
                 var poem = poemField.GetValue(__instance) as Poem;
                 if (poem == null)
                 {
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg("No poem data found");
+                    ScreenReaderMod.Logger?.Msg("No poem data found");
                     return;
                 }
 
@@ -65,8 +61,7 @@ namespace DDLCScreenReaderMod
                 // Get the character's display name
                 string authorName = SpeakerMapping.GetSpeakerName(poem.author);
 
-                if (ModConfig.Instance.EnableVerboseLogging)
-                    ScreenReaderMod.Logger?.Msg($"Poem displayed by {authorName}: {poem.title}");
+                ScreenReaderMod.Logger?.Msg($"Poem displayed by {authorName}: {poem.title}");
 
                 // Skip normal text processing for poems to preserve formatting
                 ClipboardUtils.OutputPoemText(authorName, poemText);

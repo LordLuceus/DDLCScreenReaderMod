@@ -18,8 +18,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnableLogging)
-                    ScreenReaderMod.Logger?.Msg($"Choice menu shown with {activeCount} choices");
+                ScreenReaderMod.Logger?.Msg($"Choice menu shown with {activeCount} choices");
 
                 ClipboardUtils.OutputGameText(
                     "",
@@ -41,8 +40,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnableLogging)
-                    ScreenReaderMod.Logger?.Msg("Main menu shown");
+                ScreenReaderMod.Logger?.Msg("Main menu shown");
                 ClipboardUtils.OutputGameText("", "Main menu", TextType.Menu);
             }
             catch (System.Exception ex)
@@ -59,8 +57,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnableLogging)
-                    ScreenReaderMod.Logger?.Msg("Preferences menu shown");
+                ScreenReaderMod.Logger?.Msg("Preferences menu shown");
                 ClipboardUtils.OutputGameText("", "Preferences menu", TextType.Menu);
             }
             catch (System.Exception ex)
@@ -77,8 +74,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnableLogging)
-                    ScreenReaderMod.Logger?.Msg("History menu shown");
+                ScreenReaderMod.Logger?.Msg("History menu shown");
                 ClipboardUtils.OutputGameText("", "History menu", TextType.Menu);
             }
             catch (System.Exception ex)
@@ -95,8 +91,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnableLogging)
-                    ScreenReaderMod.Logger?.Msg("Save/Load screen shown");
+                ScreenReaderMod.Logger?.Msg("Save/Load screen shown");
                 ClipboardUtils.OutputGameText("", "Save and load menu", TextType.Menu);
             }
             catch (System.Exception ex)
@@ -113,8 +108,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnableLogging)
-                    ScreenReaderMod.Logger?.Msg("Confirmation dialog shown");
+                ScreenReaderMod.Logger?.Msg("Confirmation dialog shown");
                 ClipboardUtils.OutputGameText("", "Confirmation dialog", TextType.SystemMessage);
             }
             catch (System.Exception ex)
@@ -131,8 +125,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnableLogging)
-                    ScreenReaderMod.Logger?.Msg("Name input screen shown");
+                ScreenReaderMod.Logger?.Msg("Name input screen shown");
                 ClipboardUtils.OutputGameText("", "Name input screen", TextType.SystemMessage);
             }
             catch (System.Exception ex)
@@ -155,8 +148,7 @@ namespace DDLCScreenReaderMod
                 )
                 {
                     string buttonText = __instance.textObject.text;
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg($"Button focused: {buttonText}");
+                    ScreenReaderMod.Logger?.Msg($"Button focused: {buttonText}");
                     ClipboardUtils.OutputGameText("", buttonText, TextType.Menu);
                 }
             }

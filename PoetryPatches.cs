@@ -16,18 +16,14 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnablePoetryGameAnnouncements)
+                var word = __instance.Word;
+                string wordText = word.Word.word;
+
+                if (!string.IsNullOrWhiteSpace(wordText))
                 {
-                    var word = __instance.Word;
-                    string wordText = word.Word.word;
+                    ScreenReaderMod.Logger?.Msg($"Poetry word selected: '{wordText}'");
 
-                    if (!string.IsNullOrWhiteSpace(wordText))
-                    {
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg($"Poetry word selected: '{wordText}'");
-
-                        ClipboardUtils.OutputGameText("", wordText, TextType.PoetryGame);
-                    }
+                    ClipboardUtils.OutputGameText("", wordText, TextType.PoetryGame);
                 }
             }
             catch (System.Exception ex)
@@ -47,18 +43,14 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnablePoetryGameAnnouncements)
+                var word = __instance.Word;
+                string wordText = word.Word.word;
+
+                if (!string.IsNullOrWhiteSpace(wordText))
                 {
-                    var word = __instance.Word;
-                    string wordText = word.Word.word;
+                    ScreenReaderMod.Logger?.Msg($"Poetry word hovered: '{wordText}'");
 
-                    if (!string.IsNullOrWhiteSpace(wordText))
-                    {
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg($"Poetry word hovered: '{wordText}'");
-
-                        ClipboardUtils.OutputGameText("", wordText, TextType.PoetryGame);
-                    }
+                    ClipboardUtils.OutputGameText("", wordText, TextType.PoetryGame);
                 }
             }
             catch (System.Exception ex)
@@ -75,14 +67,11 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnablePoetryGameAnnouncements)
-                {
-                    ClipboardUtils.OutputGameText(
-                        "",
-                        "Poetry minigame started. Navigate with arrow keys and press Enter to select words.",
-                        TextType.SystemMessage
-                    );
-                }
+                ClipboardUtils.OutputGameText(
+                    "",
+                    "Poetry minigame started. Navigate with arrow keys and press Enter to select words.",
+                    TextType.SystemMessage
+                );
             }
             catch (System.Exception ex)
             {
@@ -101,33 +90,30 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (ModConfig.Instance.EnablePoetryGameAnnouncements)
+                var word = selectedWord.Word;
+                string wordText = word.Word.word;
+
+                // Get current progress before it's incremented
+                int currentProgress = (int)
+                    __instance
+                        .GetType()
+                        .GetField(
+                            "Progress",
+                            System.Reflection.BindingFlags.NonPublic
+                                | System.Reflection.BindingFlags.Instance
+                        )
+                        ?.GetValue(__instance);
+
+                // Get character preferences for this word
+                string characterReactions = GetCharacterReactions(word.Word);
+
+                string message = $"Selected '{wordText}'. Progress: {currentProgress}/20";
+                if (!string.IsNullOrEmpty(characterReactions))
                 {
-                    var word = selectedWord.Word;
-                    string wordText = word.Word.word;
-
-                    // Get current progress before it's incremented
-                    int currentProgress = (int)
-                        __instance
-                            .GetType()
-                            .GetField(
-                                "Progress",
-                                System.Reflection.BindingFlags.NonPublic
-                                    | System.Reflection.BindingFlags.Instance
-                            )
-                            ?.GetValue(__instance);
-
-                    // Get character preferences for this word
-                    string characterReactions = GetCharacterReactions(word.Word);
-
-                    string message = $"Selected '{wordText}'. Progress: {currentProgress}/20";
-                    if (!string.IsNullOrEmpty(characterReactions))
-                    {
-                        message += $". {characterReactions}";
-                    }
-
-                    ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
+                    message += $". {characterReactions}";
                 }
+
+                ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
             }
             catch (System.Exception ex)
             {

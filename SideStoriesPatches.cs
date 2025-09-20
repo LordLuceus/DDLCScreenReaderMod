@@ -24,8 +24,7 @@ namespace DDLCScreenReaderMod
 
                     if (!string.IsNullOrWhiteSpace(storyTitle))
                     {
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg($"Side story selected: {storyTitle}");
+                        ScreenReaderMod.Logger?.Msg($"Side story selected: {storyTitle}");
                         ClipboardUtils.OutputGameText("", storyTitle, TextType.Menu);
                     }
                 }
@@ -176,7 +175,7 @@ namespace DDLCScreenReaderMod
         private static string GetFriendlyStoryName(string renpyLabel)
         {
             // Log the renpy label for debugging
-            if (ModConfig.Instance.EnableVerboseLogging && !string.IsNullOrWhiteSpace(renpyLabel))
+            if (!string.IsNullOrWhiteSpace(renpyLabel))
             {
                 ScreenReaderMod.Logger?.Msg($"GetFriendlyStoryName called with: '{renpyLabel}'");
             }

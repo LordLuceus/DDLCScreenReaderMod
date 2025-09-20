@@ -17,8 +17,6 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (!ModConfig.Instance.EnableNotepadIntegration)
-                    return;
 
                 // Extract file content
                 string fileName = GetFileNameFromPath(FileBrowserApp.ViewedPath);
@@ -38,10 +36,9 @@ namespace DDLCScreenReaderMod
                         );
                     }
 
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg(
-                            $"File content accessed: {fileName} ({fileContent.Length} characters)"
-                        );
+                    ScreenReaderMod.Logger?.Msg(
+                        $"File content accessed: {fileName} ({fileContent.Length} characters)"
+                    );
                 }
             }
             catch (Exception ex)
@@ -110,8 +107,7 @@ namespace DDLCScreenReaderMod
 
                 Process.Start(startInfo);
 
-                if (ModConfig.Instance.EnableVerboseLogging)
-                    ScreenReaderMod.Logger?.Msg($"Opened file in Notepad: {tempFilePath}");
+                ScreenReaderMod.Logger?.Msg($"Opened file in Notepad: {tempFilePath}");
 
                 return true;
             }

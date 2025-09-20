@@ -57,8 +57,6 @@ namespace DDLCScreenReaderMod
             {
                 if (!string.IsNullOrWhiteSpace(messageStr))
                 {
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg($"Dialog screen set data: {messageStr}");
                     ClipboardUtils.OutputGameText("", messageStr, TextType.SystemMessage);
                 }
             }
@@ -81,8 +79,6 @@ namespace DDLCScreenReaderMod
                 if (__instance.text != null && !string.IsNullOrWhiteSpace(__instance.text.text))
                 {
                     string dialogText = __instance.text.text;
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg($"Dialog refresh: {dialogText}");
                     ClipboardUtils.OutputGameText("", dialogText, TextType.SystemMessage);
                 }
             }
@@ -130,10 +126,6 @@ namespace DDLCScreenReaderMod
                     // Check for duplicate dialogue before processing
                     if (IsDialogueDuplicate(text))
                     {
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg(
-                                $"Skipped duplicate dialogue (constructor): '{text}'"
-                            );
                         return;
                     }
 
@@ -153,10 +145,9 @@ namespace DDLCScreenReaderMod
                     string speakerName = SpeakerMapping.GetSpeakerName(speakerCode);
 
                     // Log for debugging
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg(
-                            $"Dialogue line created - Code: '{speakerCode}' -> Name: '{speakerName}', Text: '{text}'"
-                        );
+                    ScreenReaderMod.Logger?.Msg(
+                        $"Dialogue line created - Code: '{speakerCode}' -> Name: '{speakerName}', Text: '{text}'"
+                    );
 
                     // If we have a speaker name, always treat as dialogue
                     TextType textType = !string.IsNullOrWhiteSpace(speakerName)
@@ -188,10 +179,6 @@ namespace DDLCScreenReaderMod
                     // Check for duplicate dialogue before processing
                     if (IsDialogueDuplicate(value))
                     {
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg(
-                                $"Skipped duplicate dialogue (setter): '{value}'"
-                            );
                         return;
                     }
 
@@ -211,10 +198,9 @@ namespace DDLCScreenReaderMod
                     string speakerName = SpeakerMapping.GetSpeakerName(speakerCode);
 
                     // Log for debugging
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg(
-                            $"Dialogue text set - Code: '{speakerCode}' -> Name: '{speakerName}', Text: '{value}'"
-                        );
+                    ScreenReaderMod.Logger?.Msg(
+                        $"Dialogue text set - Code: '{speakerCode}' -> Name: '{speakerName}', Text: '{value}'"
+                    );
 
                     // If we have a speaker name, always treat as dialogue
                     TextType textType = !string.IsNullOrWhiteSpace(speakerName)

@@ -38,9 +38,6 @@
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Doki Doki Literature Club Plus\Doki Doki Literature Club Plus_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-  </ItemGroup>
   <Target Name="CopyModAfterBuild" AfterTargets="Build">
     <!-- Display a message in the build output -->
     <Message Text="--- Copying $(ProjectName).dll to game folder ---" Importance="high" />

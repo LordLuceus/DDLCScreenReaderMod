@@ -27,8 +27,7 @@ namespace DDLCScreenReaderMod
                 if (b != null && b.Text != null && !string.IsNullOrWhiteSpace(b.Text.text))
                 {
                     string buttonText = b.Text.text;
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg($"Launcher button selected: {buttonText}");
+                    ScreenReaderMod.Logger?.Msg($"Launcher button selected: {buttonText}");
                     ClipboardUtils.OutputGameText("", buttonText, TextType.Menu);
                 }
             }
@@ -114,10 +113,9 @@ namespace DDLCScreenReaderMod
                             lastConfirmationButtonText = buttonText;
                             lastConfirmationButtonObject = currentSelected;
 
-                            if (ModConfig.Instance.EnableVerboseLogging)
-                                ScreenReaderMod.Logger?.Msg(
-                                    $"Confirmation button focused: {buttonText}"
-                                );
+                            ScreenReaderMod.Logger?.Msg(
+                                $"Confirmation button focused: {buttonText}"
+                            );
                             ClipboardUtils.OutputGameText("", buttonText, TextType.Menu);
                         }
                     }
@@ -144,8 +142,7 @@ namespace DDLCScreenReaderMod
                 )
                 {
                     string systemText = __instance.checkSystemText.text;
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg($"Boot system info: {systemText}");
+                    ScreenReaderMod.Logger?.Msg($"Boot system info: {systemText}");
                     ClipboardUtils.OutputGameText("", systemText, TextType.SystemMessage);
                 }
             }
@@ -197,8 +194,7 @@ namespace DDLCScreenReaderMod
                                 string line = lines[i].Trim();
                                 if (!string.IsNullOrEmpty(line))
                                 {
-                                    if (ModConfig.Instance.EnableVerboseLogging)
-                                        ScreenReaderMod.Logger?.Msg($"Boot sequence line: {line}");
+                                    ScreenReaderMod.Logger?.Msg($"Boot sequence line: {line}");
                                     ClipboardUtils.OutputGameText("", line, TextType.SystemMessage);
                                 }
                             }
@@ -258,8 +254,7 @@ namespace DDLCScreenReaderMod
                                 string line = lines[i].Trim();
                                 if (!string.IsNullOrEmpty(line))
                                 {
-                                    if (ModConfig.Instance.EnableVerboseLogging)
-                                        ScreenReaderMod.Logger?.Msg($"BIOS sequence line: {line}");
+                                    ScreenReaderMod.Logger?.Msg($"BIOS sequence line: {line}");
                                     ClipboardUtils.OutputGameText("", line, TextType.SystemMessage);
                                 }
                             }

@@ -94,14 +94,6 @@ namespace DDLCScreenReaderMod
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            if (!ModConfig.Instance.ShouldOutputTextType(textType))
-                return;
-
-            if (text.Length > ModConfig.Instance.MaxTextLength)
-            {
-                text = text.Substring(0, ModConfig.Instance.MaxTextLength) + "...";
-            }
-
             string formattedText = FormatTextForScreenReader(speaker, text, textType);
 
             if (SetClipboardText(formattedText, textType))
@@ -118,13 +110,6 @@ namespace DDLCScreenReaderMod
                 ScreenReaderMod.Logger?.Msg(
                     $"[{textType}] Clipboard: '{formattedText}' (Speaker: '{speaker}')"
                 );
-
-                if (ModConfig.Instance.EnableVerboseLogging)
-                {
-                    ScreenReaderMod.Logger?.Msg(
-                        $"[{textType}] Output to clipboard: {formattedText}"
-                    );
-                }
             }
         }
 
@@ -132,14 +117,6 @@ namespace DDLCScreenReaderMod
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
-
-            if (!ModConfig.Instance.EnablePoemReading)
-                return;
-
-            if (text.Length > ModConfig.Instance.MaxTextLength)
-            {
-                text = text.Substring(0, ModConfig.Instance.MaxTextLength) + "...";
-            }
 
             // Format poem text with speaker name but skip normal text cleaning to preserve line breaks
             string formattedText;
@@ -159,11 +136,6 @@ namespace DDLCScreenReaderMod
                 ScreenReaderMod.Logger?.Msg(
                     $"[Poem] Clipboard: '{formattedText}' (Speaker: '{speaker}')"
                 );
-
-                if (ModConfig.Instance.EnableVerboseLogging)
-                {
-                    ScreenReaderMod.Logger?.Msg($"[Poem] Output to clipboard: {formattedText}");
-                }
             }
         }
 
@@ -178,10 +150,7 @@ namespace DDLCScreenReaderMod
             switch (textType)
             {
                 case TextType.Dialogue:
-                    if (
-                        ModConfig.Instance.IncludeSpeakerNames
-                        && !string.IsNullOrWhiteSpace(speaker)
-                    )
+                    if (!string.IsNullOrWhiteSpace(speaker))
                         return $"{speaker}: {text}";
                     return text;
 

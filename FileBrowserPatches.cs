@@ -32,10 +32,9 @@ namespace DDLCScreenReaderMod
                     {
                         lastSelectedFileItem = itemText;
 
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg(
-                                $"File browser item selected: {itemText}"
-                            );
+                        ScreenReaderMod.Logger?.Msg(
+                            $"File browser item selected: {itemText}"
+                        );
 
                         ClipboardUtils.OutputGameText("", itemText, TextType.FileBrowser);
                     }
@@ -70,10 +69,9 @@ namespace DDLCScreenReaderMod
                         {
                             lastAnnouncedDirectory = directoryInfo;
 
-                            if (ModConfig.Instance.EnableVerboseLogging)
-                                ScreenReaderMod.Logger?.Msg(
-                                    $"File browser directory changed: {directoryInfo}"
-                                );
+                            ScreenReaderMod.Logger?.Msg(
+                                $"File browser directory changed: {directoryInfo}"
+                            );
 
                             ClipboardUtils.OutputGameText("", directoryInfo, TextType.FileBrowser);
                         }
@@ -103,14 +101,10 @@ namespace DDLCScreenReaderMod
                     {
                         string message = $"Opening {fileName}";
 
-                        // Add information about Notepad integration if enabled
-                        if (ModConfig.Instance.EnableNotepadIntegration)
-                        {
-                            message += ". File content will be opened in Notepad.";
-                        }
+                        // Add information about Notepad integration
+                        message += ". File content will be opened in Notepad.";
 
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg($"File browser opening: {message}");
+                        ScreenReaderMod.Logger?.Msg($"File browser opening: {message}");
 
                         ClipboardUtils.OutputGameText("", message, TextType.FileBrowser);
                     }
@@ -140,8 +134,7 @@ namespace DDLCScreenReaderMod
                     {
                         string message = $"Deleting {fileName}";
 
-                        if (ModConfig.Instance.EnableVerboseLogging)
-                            ScreenReaderMod.Logger?.Msg($"File browser deleting: {message}");
+                        ScreenReaderMod.Logger?.Msg($"File browser deleting: {message}");
 
                         ClipboardUtils.OutputGameText("", message, TextType.FileBrowser);
                     }

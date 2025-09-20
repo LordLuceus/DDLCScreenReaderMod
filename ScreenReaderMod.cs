@@ -18,12 +18,9 @@ namespace DDLCScreenReaderMod
 
             try
             {
-                ModConfig.LoadConfig();
                 ClipboardUtils.Initialize();
                 Logger.Msg("Clipboard utility initialized successfully");
-                Logger.Msg(
-                    $"Configuration loaded - Dialogue: {ModConfig.Instance.EnableDialogue}, Menus: {ModConfig.Instance.EnableMenus}, Choices: {ModConfig.Instance.EnableChoices}, Speaker Names: {ModConfig.Instance.IncludeSpeakerNames}"
-                );
+                Logger.Msg("Using default settings - All text types enabled, Speaker names included");
             }
             catch (Exception ex)
             {
@@ -46,7 +43,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (Input.GetKeyDown(ModConfig.Instance.RepeatDialogueHotkey))
+                if (Input.GetKeyDown(KeyCode.R))
                 {
                     ClipboardUtils.RepeatCurrentDialogue();
                 }
