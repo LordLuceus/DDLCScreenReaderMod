@@ -121,6 +121,47 @@ namespace DDLCScreenReaderMod
             }
         }
 
+        public static void OutputPoemText(string speaker, string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
+            if (!ModConfig.Instance.EnablePoemReading)
+                return;
+
+            if (text.Length > ModConfig.Instance.MaxTextLength)
+            {
+                text = text.Substring(0, ModConfig.Instance.MaxTextLength) + "...";
+            }
+
+            // Format poem text with speaker name but skip normal text cleaning to preserve line breaks
+            string formattedText;
+            if (!string.IsNullOrWhiteSpace(speaker))
+                formattedText = $"{speaker}: {text}";
+            else
+                formattedText = text;
+
+            if (SetClipboardText(formattedText))
+            {
+                // Store current dialogue for repeat functionality
+                currentDialogueSpeaker = speaker ?? "";
+                currentDialogueText = text;
+                currentDialogueType = TextType.Poem;
+
+                // Always log clipboard output for debugging
+                ScreenReaderMod.Logger?.Msg(
+                    $"[Poem] Clipboard: '{formattedText}' (Speaker: '{speaker}')"
+                );
+
+                if (ModConfig.Instance.EnableVerboseLogging)
+                {
+                    ScreenReaderMod.Logger?.Msg(
+                        $"[Poem] Output to clipboard: {formattedText}"
+                    );
+                }
+            }
+        }
+
         private static string FormatTextForScreenReader(
             string speaker,
             string text,
@@ -155,6 +196,11 @@ namespace DDLCScreenReaderMod
                 case TextType.PoetryGame:
                     return text;
 
+                case TextType.Poem:
+                    if (!string.IsNullOrWhiteSpace(speaker))
+                        return $"{speaker}: {text}";
+                    return text;
+
                 default:
                     return text;
             }
@@ -170,5 +216,6 @@ namespace DDLCScreenReaderMod
         Narrator,
         PoetryGame,
         FileBrowser,
+        Poem,
     }
 }

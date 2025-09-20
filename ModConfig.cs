@@ -73,6 +73,9 @@ namespace DDLCScreenReaderMod
         [JsonProperty("enableNotepadIntegration")]
         public bool EnableNotepadIntegration { get; set; } = true;
 
+        [JsonProperty("enablePoemReading")]
+        public bool EnablePoemReading { get; set; } = true;
+
         public static void LoadConfig()
         {
             try
@@ -149,6 +152,8 @@ namespace DDLCScreenReaderMod
                     return EnablePoetryGameAnnouncements;
                 case TextType.FileBrowser:
                     return EnableFileBrowserAnnouncements;
+                case TextType.Poem:
+                    return EnablePoemReading;
                 default:
                     return true;
             }
