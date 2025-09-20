@@ -22,7 +22,7 @@ namespace DDLCScreenReaderMod
 
                 ClipboardUtils.OutputGameText(
                     "",
-                    $"Choose from {activeCount} options",
+                    $"Choose from {activeCount} option{(activeCount > 1 ? "s" : "")}",
                     TextType.Menu
                 );
             }

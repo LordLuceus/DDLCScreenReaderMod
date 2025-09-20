@@ -59,13 +59,8 @@ namespace DDLCScreenReaderMod
                 if (string.IsNullOrWhiteSpace(poemText) || IsPoemDuplicate(poemText))
                     return;
 
-                // Get the character's display name
-                string authorName = SpeakerMapping.GetSpeakerName(poem.author);
-
-                ScreenReaderMod.Logger?.Msg($"Poem displayed by {authorName}: {poem.title}");
-
                 // Skip normal text processing for poems to preserve formatting
-                ClipboardUtils.OutputPoemText(authorName, poemText);
+                ClipboardUtils.OutputPoemText(poemText);
             }
             catch (System.Exception ex)
             {
@@ -186,7 +181,6 @@ namespace DDLCScreenReaderMod
             cleaned = cleaned.Replace("\\\\", "\\");
 
             // Normalize all types of line break combinations to single line breaks
-            // First, normalize all line break variations to \n
             cleaned = cleaned.Replace("\r\n", "\n").Replace("\r", "\n");
 
             return cleaned;

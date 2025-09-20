@@ -113,29 +113,19 @@ namespace DDLCScreenReaderMod
             }
         }
 
-        public static void OutputPoemText(string speaker, string text)
+        public static void OutputPoemText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            // Format poem text with speaker name but skip normal text cleaning to preserve line breaks
-            string formattedText;
-            if (!string.IsNullOrWhiteSpace(speaker))
-                formattedText = $"{speaker}: {text}";
-            else
-                formattedText = text;
-
-            if (SetClipboardText(formattedText, TextType.Poem))
+            if (SetClipboardText(text, TextType.Poem))
             {
                 // Store current dialogue for repeat functionality
-                currentDialogueSpeaker = speaker ?? "";
+                currentDialogueSpeaker = "";
                 currentDialogueText = text;
                 currentDialogueType = TextType.Poem;
 
-                // Always log clipboard output for debugging
-                ScreenReaderMod.Logger?.Msg(
-                    $"[Poem] Clipboard: '{formattedText}' (Speaker: '{speaker}')"
-                );
+                ScreenReaderMod.Logger?.Msg($"[Poem] Clipboard: '{text}'");
             }
         }
 
