@@ -5,3 +5,4 @@
 - [x] Fix file browser context menu
 - [x] Get rid of config
 - [x] Read poems
+- [ ] Read sections of preferences menu

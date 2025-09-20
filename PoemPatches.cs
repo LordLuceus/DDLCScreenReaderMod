@@ -1,6 +1,6 @@
 using HarmonyLib;
-using RenPyParser.Screens.PoemScreen;
 using RenpyParser;
+using RenPyParser.Screens.PoemScreen;
 using UnityEngine;
 
 namespace DDLCScreenReaderMod
@@ -33,11 +33,12 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-
                 // Access the private poem field using reflection
-                var poemField = typeof(RenpyPoemUI).GetField("m_Poem",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance);
+                var poemField = typeof(RenpyPoemUI).GetField(
+                    "m_Poem",
+                    System.Reflection.BindingFlags.NonPublic
+                        | System.Reflection.BindingFlags.Instance
+                );
 
                 if (poemField == null)
                 {
@@ -109,10 +110,12 @@ namespace DDLCScreenReaderMod
                     try
                     {
                         // Don't pre-process, let localization handle it
-                        content = Renpy.Text.GetLocalisedString(content,
+                        content = Renpy.Text.GetLocalisedString(
+                            content,
                             LocalisedStringPostProcessing.ReplaceLineBreaks,
                             "persistent",
-                            ignoreSymbolsForEnglish: true);
+                            ignoreSymbolsForEnglish: true
+                        );
                     }
                     catch
                     {
@@ -143,11 +146,36 @@ namespace DDLCScreenReaderMod
 
             // Remove Ren'Py formatting tags but preserve line breaks
             cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\{[^}]*\}", "");
-            cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\[color=[^]]*\]|\[/color\]", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\[size=[^]]*\]|\[/size\]", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\[b\]|\[/b\]", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\[i\]|\[/i\]", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\[u\]|\[/u\]", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            cleaned = System.Text.RegularExpressions.Regex.Replace(
+                cleaned,
+                @"\[color=[^]]*\]|\[/color\]",
+                "",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase
+            );
+            cleaned = System.Text.RegularExpressions.Regex.Replace(
+                cleaned,
+                @"\[size=[^]]*\]|\[/size\]",
+                "",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase
+            );
+            cleaned = System.Text.RegularExpressions.Regex.Replace(
+                cleaned,
+                @"\[b\]|\[/b\]",
+                "",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase
+            );
+            cleaned = System.Text.RegularExpressions.Regex.Replace(
+                cleaned,
+                @"\[i\]|\[/i\]",
+                "",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase
+            );
+            cleaned = System.Text.RegularExpressions.Regex.Replace(
+                cleaned,
+                @"\[u\]|\[/u\]",
+                "",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase
+            );
 
             // Unescape special characters, using single line breaks
             cleaned = cleaned.Replace("\\n", "\n");
@@ -160,9 +188,6 @@ namespace DDLCScreenReaderMod
             // Normalize all types of line break combinations to single line breaks
             // First, normalize all line break variations to \n
             cleaned = cleaned.Replace("\r\n", "\n").Replace("\r", "\n");
-
-            // Then collapse multiple consecutive \n into single \n
-            cleaned = System.Text.RegularExpressions.Regex.Replace(cleaned, @"\n\n+", "\n");
 
             return cleaned;
         }
