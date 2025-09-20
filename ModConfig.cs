@@ -70,6 +70,9 @@ namespace DDLCScreenReaderMod
         [JsonProperty("enableFileBrowserAnnouncements")]
         public bool EnableFileBrowserAnnouncements { get; set; } = true;
 
+        [JsonProperty("enableNotepadIntegration")]
+        public bool EnableNotepadIntegration { get; set; } = true;
+
         public static void LoadConfig()
         {
             try

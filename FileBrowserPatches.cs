@@ -103,6 +103,12 @@ namespace DDLCScreenReaderMod
                     {
                         string message = $"Opening {fileName}";
 
+                        // Add information about Notepad integration if enabled
+                        if (ModConfig.Instance.EnableNotepadIntegration)
+                        {
+                            message += ". File content will be opened in Notepad.";
+                        }
+
                         if (ModConfig.Instance.EnableVerboseLogging)
                             ScreenReaderMod.Logger?.Msg($"File browser opening: {message}");
 
