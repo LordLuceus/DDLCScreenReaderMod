@@ -48,7 +48,6 @@ namespace DDLCScreenReaderMod
             }
         }
 
-
         [HarmonyPatch(
             typeof(RenpyChoiceEntryUI),
             MethodType.Constructor,
@@ -208,7 +207,6 @@ namespace DDLCScreenReaderMod
                 );
             }
         }
-
 
         [HarmonyPatch(typeof(RenpyButtonUI), "OnButtonFocussed")]
         [HarmonyPostfix]

@@ -34,16 +34,7 @@ namespace DDLCScreenReaderMod
             Logger.Msg($"Scene loaded: {sceneName} (Index: {buildIndex})");
 
             // Test clipboard functionality and announce scene changes
-            if (sceneName == "DDLCMain")
-            {
-                Logger.Msg("Testing clipboard functionality...");
-                ClipboardUtils.OutputGameText(
-                    "System",
-                    "DDLC Screen Reader Mod is active",
-                    TextType.SystemMessage
-                );
-            }
-            else if (sceneName == "LauncherScene")
+            if (sceneName == "LauncherScene")
             {
                 ClipboardUtils.OutputGameText("", "DDLC Plus launcher", TextType.Menu);
             }

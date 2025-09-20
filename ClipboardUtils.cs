@@ -136,7 +136,9 @@ namespace DDLCScreenReaderMod
             if (SetClipboardText(formattedText))
             {
                 // Always log clipboard output for debugging speaker names
-                ScreenReaderMod.Logger?.Msg($"[{textType}] Clipboard: '{formattedText}' (Speaker: '{speaker}')");
+                ScreenReaderMod.Logger?.Msg(
+                    $"[{textType}] Clipboard: '{formattedText}' (Speaker: '{speaker}')"
+                );
 
                 if (ModConfig.Instance.EnableVerboseLogging)
                 {

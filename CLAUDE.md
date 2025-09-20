@@ -72,17 +72,6 @@ The mod categorizes all text into types defined in `ClipboardUtils.cs`:
 - **SystemMessage**: Game system notifications
 - **Narrator**: Descriptive/narrative text without speakers
 
-## Configuration System
-
-Configuration is stored as JSON in `%USERPROFILE%\AppData\LocalLow\VRChat\VRChat\UserData\DDLCScreenReaderMod\config.json`
-
-Key settings:
-- Enable/disable different text types
-- Include speaker names with dialogue
-- Clipboard update delay for rate limiting
-- Text length limits and duplicate filtering
-- Logging verbosity levels
-
 ## Dependencies
 
 - **.NET Framework 4.7.2** target
