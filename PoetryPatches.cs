@@ -91,5 +91,42 @@ namespace DDLCScreenReaderMod
                 );
             }
         }
+
+        [HarmonyPatch(typeof(PoetryGameScreen), "OnWordSelected")]
+        [HarmonyPrefix]
+        public static void PoetryGameScreen_OnWordSelected_Prefix(
+            PoetryGameScreen __instance,
+            WordSelect selectedWord
+        )
+        {
+            try
+            {
+                if (ModConfig.Instance.EnablePoetryGameAnnouncements)
+                {
+                    var word = selectedWord.Word;
+                    string wordText = word.Word.word;
+
+                    // Get current progress before it's incremented
+                    int currentProgress = (int)
+                        __instance
+                            .GetType()
+                            .GetField(
+                                "Progress",
+                                System.Reflection.BindingFlags.NonPublic
+                                    | System.Reflection.BindingFlags.Instance
+                            )
+                            ?.GetValue(__instance);
+
+                    string message = $"Selected '{wordText}'. Progress: {currentProgress}/20";
+                    ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in PoetryGameScreen_OnWordSelected_Prefix: {ex.Message}"
+                );
+            }
+        }
     }
 }
