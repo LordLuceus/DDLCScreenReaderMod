@@ -90,6 +90,30 @@ namespace DDLCScreenReaderMod
             }
         }
 
+        // Patch DDLC_Over18 component to announce age verification message
+        [HarmonyPatch(typeof(DDLC_Over18), "RunAnimation")]
+        [HarmonyPostfix]
+        public static void DDLC_Over18_RunAnimation_Postfix(DDLC_Over18 __instance)
+        {
+            try
+            {
+                if (
+                    __instance.textGUI != null
+                    && !string.IsNullOrWhiteSpace(__instance.textGUI.text)
+                )
+                {
+                    string ageVerificationText = __instance.textGUI.text;
+                    ClipboardUtils.OutputGameText("", ageVerificationText, TextType.SystemMessage);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in DDLC_Over18_RunAnimation_Postfix: {ex.Message}"
+                );
+            }
+        }
+
         [HarmonyPatch(
             typeof(DialogueLine),
             MethodType.Constructor,
