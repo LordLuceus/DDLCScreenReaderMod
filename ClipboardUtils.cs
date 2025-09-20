@@ -169,5 +169,6 @@ namespace DDLCScreenReaderMod
         SystemMessage,
         Narrator,
         PoetryGame,
+        FileBrowser,
     }
 }

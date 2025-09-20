@@ -67,6 +67,9 @@ namespace DDLCScreenReaderMod
         [JsonProperty("enablePoetryGameAnnouncements")]
         public bool EnablePoetryGameAnnouncements { get; set; } = true;
 
+        [JsonProperty("enableFileBrowserAnnouncements")]
+        public bool EnableFileBrowserAnnouncements { get; set; } = true;
+
         public static void LoadConfig()
         {
             try
@@ -141,6 +144,8 @@ namespace DDLCScreenReaderMod
                     return EnableNarrator;
                 case TextType.PoetryGame:
                     return EnablePoetryGameAnnouncements;
+                case TextType.FileBrowser:
+                    return EnableFileBrowserAnnouncements;
                 default:
                     return true;
             }
