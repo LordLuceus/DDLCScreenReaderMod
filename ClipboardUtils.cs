@@ -41,7 +41,7 @@ namespace DDLCScreenReaderMod
                 lastText = "";
                 lastUpdate = DateTime.MinValue;
 
-                if (SetClipboardText(formattedText))
+                if (SetClipboardText(formattedText, currentDialogueType))
                 {
                     ScreenReaderMod.Logger?.Msg($"Repeated dialogue: '{formattedText}'");
                 }
@@ -56,12 +56,19 @@ namespace DDLCScreenReaderMod
             }
         }
 
-        public static bool SetClipboardText(string text)
+        public static bool SetClipboardText(string text, TextType textType = TextType.Dialogue)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return false;
 
-            if (text == lastText && DateTime.Now - lastUpdate < MinUpdateInterval)
+            // SystemMessages should bypass rate limiting to ensure important announcements are never missed
+            bool shouldBypassRateLimit = textType == TextType.SystemMessage;
+
+            if (
+                !shouldBypassRateLimit
+                && text == lastText
+                && DateTime.Now - lastUpdate < MinUpdateInterval
+            )
                 return false;
 
             try
@@ -97,7 +104,7 @@ namespace DDLCScreenReaderMod
 
             string formattedText = FormatTextForScreenReader(speaker, text, textType);
 
-            if (SetClipboardText(formattedText))
+            if (SetClipboardText(formattedText, textType))
             {
                 // Store current dialogue for repeat functionality
                 if (textType == TextType.Dialogue || textType == TextType.Narrator)
@@ -141,7 +148,7 @@ namespace DDLCScreenReaderMod
             else
                 formattedText = text;
 
-            if (SetClipboardText(formattedText))
+            if (SetClipboardText(formattedText, TextType.Poem))
             {
                 // Store current dialogue for repeat functionality
                 currentDialogueSpeaker = speaker ?? "";
@@ -155,9 +162,7 @@ namespace DDLCScreenReaderMod
 
                 if (ModConfig.Instance.EnableVerboseLogging)
                 {
-                    ScreenReaderMod.Logger?.Msg(
-                        $"[Poem] Output to clipboard: {formattedText}"
-                    );
+                    ScreenReaderMod.Logger?.Msg($"[Poem] Output to clipboard: {formattedText}");
                 }
             }
         }
