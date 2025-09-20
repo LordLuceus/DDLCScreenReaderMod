@@ -8,6 +8,44 @@ namespace DDLCScreenReaderMod
     [HarmonyPatch]
     public static class DialoguePatches
     {
+        // Track recent dialogue to prevent duplicates from constructor/setter calls
+        private static string lastDialogueText = "";
+        private static System.DateTime lastDialogueTime = System.DateTime.MinValue;
+        private static readonly System.TimeSpan DialogueDuplicateWindow =
+            System.TimeSpan.FromMilliseconds(100);
+
+        private static bool IsDialogueDuplicate(string text)
+        {
+            var now = System.DateTime.Now;
+
+            // Normalize text for comparison (handle dash variations and minor formatting differences)
+            string normalizedText = NormalizeTextForComparison(text);
+            string normalizedLast = NormalizeTextForComparison(lastDialogueText);
+
+            bool isDuplicate =
+                normalizedText == normalizedLast
+                && (now - lastDialogueTime) < DialogueDuplicateWindow;
+
+            if (!isDuplicate)
+            {
+                lastDialogueText = text;
+                lastDialogueTime = now;
+            }
+
+            return isDuplicate;
+        }
+
+        private static string NormalizeTextForComparison(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "";
+
+            // Normalize various dash representations to detect duplicates
+            return text.Replace("—", "--") // em dash to double dash
+                .Replace("–", "-") // en dash to single dash
+                .Trim();
+        }
+
         [HarmonyPatch(typeof(RenpyDialogScreenUI), "SetData")]
         [HarmonyPostfix]
         public static void RenpyDialogScreenUI_SetData_Postfix(
@@ -89,6 +127,16 @@ namespace DDLCScreenReaderMod
             {
                 if (!string.IsNullOrWhiteSpace(text))
                 {
+                    // Check for duplicate dialogue before processing
+                    if (IsDialogueDuplicate(text))
+                    {
+                        if (ModConfig.Instance.EnableVerboseLogging)
+                            ScreenReaderMod.Logger?.Msg(
+                                $"Skipped duplicate dialogue (constructor): '{text}'"
+                            );
+                        return;
+                    }
+
                     string speakerCode = string.IsNullOrWhiteSpace(__instance.Tag)
                         ? ""
                         : __instance.Tag;
@@ -137,6 +185,16 @@ namespace DDLCScreenReaderMod
             {
                 if (!string.IsNullOrWhiteSpace(value))
                 {
+                    // Check for duplicate dialogue before processing
+                    if (IsDialogueDuplicate(value))
+                    {
+                        if (ModConfig.Instance.EnableVerboseLogging)
+                            ScreenReaderMod.Logger?.Msg(
+                                $"Skipped duplicate dialogue (setter): '{value}'"
+                            );
+                        return;
+                    }
+
                     string speakerCode = string.IsNullOrWhiteSpace(__instance.Tag)
                         ? ""
                         : __instance.Tag;
