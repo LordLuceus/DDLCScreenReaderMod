@@ -1,5 +1,7 @@
+using System.Collections;
 using HarmonyLib;
 using RenpyLauncher;
+using TMPro;
 using UnityEngine.UI;
 
 namespace DDLCScreenReaderMod
@@ -126,6 +128,154 @@ namespace DDLCScreenReaderMod
                 ScreenReaderMod.Logger?.Error(
                     $"Error in DesktopConfirmationWindow_UpdateSelection_Postfix: {ex.Message}"
                 );
+            }
+        }
+
+        // Patch BootupApp to announce system information text
+        [HarmonyPatch(typeof(BootupApp), "SetLocalization")]
+        [HarmonyPostfix]
+        public static void BootupApp_SetLocalization_Postfix(BootupApp __instance)
+        {
+            try
+            {
+                if (
+                    __instance.checkSystemText != null
+                    && !string.IsNullOrWhiteSpace(__instance.checkSystemText.text)
+                )
+                {
+                    string systemText = __instance.checkSystemText.text;
+                    if (ModConfig.Instance.EnableVerboseLogging)
+                        ScreenReaderMod.Logger?.Msg($"Boot system info: {systemText}");
+                    ClipboardUtils.OutputGameText("", systemText, TextType.SystemMessage);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in BootupApp_SetLocalization_Postfix: {ex.Message}"
+                );
+            }
+        }
+
+        // Patch BootupApp sequence to announce boot messages as they appear
+        [HarmonyPatch(typeof(BootupApp), "Sequence")]
+        [HarmonyPostfix]
+        public static void BootupApp_Sequence_Postfix(BootupApp __instance)
+        {
+            try
+            {
+                // Start monitoring the boot sequence text changes
+                __instance.StartCoroutine(MonitorBootSequenceText(__instance));
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error($"Error in BootupApp_Sequence_Postfix: {ex.Message}");
+            }
+        }
+
+        private static IEnumerator MonitorBootSequenceText(BootupApp bootupApp)
+        {
+            string lastText = "";
+
+            while (bootupApp != null && bootupApp.gameObject.activeInHierarchy)
+            {
+                try
+                {
+                    if (bootupApp.label != null && !string.IsNullOrWhiteSpace(bootupApp.label.text))
+                    {
+                        string currentText = bootupApp.label.text.Trim();
+
+                        if (currentText != lastText && !string.IsNullOrEmpty(currentText))
+                        {
+                            // Only announce new lines, not empty text or repeated text
+                            string[] lines = currentText.Split('\n');
+                            string[] lastLines = lastText.Split('\n');
+
+                            // Find new lines that weren't in the previous text
+                            for (int i = lastLines.Length; i < lines.Length; i++)
+                            {
+                                string line = lines[i].Trim();
+                                if (!string.IsNullOrEmpty(line))
+                                {
+                                    if (ModConfig.Instance.EnableVerboseLogging)
+                                        ScreenReaderMod.Logger?.Msg($"Boot sequence line: {line}");
+                                    ClipboardUtils.OutputGameText("", line, TextType.SystemMessage);
+                                }
+                            }
+
+                            lastText = currentText;
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    ScreenReaderMod.Logger?.Error(
+                        $"Error monitoring boot sequence text: {ex.Message}"
+                    );
+                }
+
+                yield return new UnityEngine.WaitForSeconds(0.1f); // Check every 100ms
+            }
+        }
+
+        // Patch BiosApp to announce initial BIOS screen text
+        [HarmonyPatch(typeof(BiosApp), "Sequence")]
+        [HarmonyPostfix]
+        public static void BiosApp_Sequence_Postfix(BiosApp __instance)
+        {
+            try
+            {
+                // Start monitoring the BIOS sequence text changes
+                __instance.StartCoroutine(MonitorBiosSequenceText(__instance));
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error($"Error in BiosApp_Sequence_Postfix: {ex.Message}");
+            }
+        }
+
+        private static IEnumerator MonitorBiosSequenceText(BiosApp biosApp)
+        {
+            string lastText = "";
+
+            while (biosApp != null && biosApp.gameObject.activeInHierarchy)
+            {
+                try
+                {
+                    if (biosApp.label != null && !string.IsNullOrWhiteSpace(biosApp.label.text))
+                    {
+                        string currentText = biosApp.label.text.Trim();
+
+                        if (currentText != lastText && !string.IsNullOrEmpty(currentText))
+                        {
+                            // Only announce new lines, not empty text or repeated text
+                            string[] lines = currentText.Split('\n');
+                            string[] lastLines = lastText.Split('\n');
+
+                            // Find new lines that weren't in the previous text
+                            for (int i = lastLines.Length; i < lines.Length; i++)
+                            {
+                                string line = lines[i].Trim();
+                                if (!string.IsNullOrEmpty(line))
+                                {
+                                    if (ModConfig.Instance.EnableVerboseLogging)
+                                        ScreenReaderMod.Logger?.Msg($"BIOS sequence line: {line}");
+                                    ClipboardUtils.OutputGameText("", line, TextType.SystemMessage);
+                                }
+                            }
+
+                            lastText = currentText;
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    ScreenReaderMod.Logger?.Error(
+                        $"Error monitoring BIOS sequence text: {ex.Message}"
+                    );
+                }
+
+                yield return new UnityEngine.WaitForSeconds(0.1f); // Check every 100ms
             }
         }
     }

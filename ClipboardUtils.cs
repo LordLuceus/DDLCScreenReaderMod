@@ -173,7 +173,6 @@ namespace DDLCScreenReaderMod
             TextType textType
         )
         {
-            // Clean the text (re-enable text processing now that we have filtering)
             text = TextProcessor.CleanText(text);
 
             switch (textType)
@@ -187,17 +186,8 @@ namespace DDLCScreenReaderMod
                     return text;
 
                 case TextType.MenuChoice:
-                    return text;
-
                 case TextType.Menu:
-                    return text;
-
                 case TextType.SystemMessage:
-                    return $"System: {text}";
-
-                case TextType.Narrator:
-                    return text;
-
                 case TextType.PoetryGame:
                     return text;
 
