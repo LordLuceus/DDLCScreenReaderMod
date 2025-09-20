@@ -21,11 +21,12 @@ namespace DDLCScreenReaderMod
                 // Extract file content
                 string fileName = GetFileNameFromPath(FileBrowserApp.ViewedPath);
                 string fileContent = ExtractFileContent();
+                bool isTextFile = IsTextFile();
 
                 if (!string.IsNullOrWhiteSpace(fileContent))
                 {
-                    // Open in Notepad
-                    if (TryOpenInNotepad(fileName, fileContent))
+                    // Only open text files in Notepad and announce accordingly
+                    if (isTextFile && TryOpenInNotepad(fileName, fileContent))
                     {
                         string notepadAnnouncement =
                             $"File opened: {fileName}. Content opened in Notepad.";
@@ -46,6 +47,20 @@ namespace DDLCScreenReaderMod
                 ScreenReaderMod.Logger?.Error(
                     $"Error in FileViewerApp_OnAppStart_Postfix: {ex.Message}"
                 );
+            }
+        }
+
+        private static bool IsTextFile()
+        {
+            try
+            {
+                var viewedAsset = FileBrowserApp.ViewedAsset;
+                return viewedAsset is TextAsset;
+            }
+            catch (Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error($"Error checking if file is text: {ex.Message}");
+                return false;
             }
         }
 

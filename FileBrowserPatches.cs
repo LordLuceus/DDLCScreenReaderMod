@@ -32,9 +32,7 @@ namespace DDLCScreenReaderMod
                     {
                         lastSelectedFileItem = itemText;
 
-                        ScreenReaderMod.Logger?.Msg(
-                            $"File browser item selected: {itemText}"
-                        );
+                        ScreenReaderMod.Logger?.Msg($"File browser item selected: {itemText}");
 
                         ClipboardUtils.OutputGameText("", itemText, TextType.FileBrowser);
                     }
@@ -101,8 +99,11 @@ namespace DDLCScreenReaderMod
                     {
                         string message = $"Opening {fileName}";
 
-                        // Add information about Notepad integration
-                        message += ". File content will be opened in Notepad.";
+                        // Add information about Notepad integration only for text files
+                        if (IsTextFile(currentSelectedItem))
+                        {
+                            message += ". File content will be opened in Notepad.";
+                        }
 
                         ScreenReaderMod.Logger?.Msg($"File browser opening: {message}");
 
@@ -290,6 +291,34 @@ namespace DDLCScreenReaderMod
             {
                 ScreenReaderMod.Logger?.Error($"Error getting buttons list: {ex.Message}");
                 return null;
+            }
+        }
+
+        private static bool IsTextFile(FileBrowserButton button)
+        {
+            try
+            {
+                if (button == null)
+                    return false;
+
+                // Check if it's a folder
+                if (button.UserData?.StartsWith("###") == true)
+                    return false;
+
+                string fileType = button.TextFileTypeComponent?.text ?? "";
+
+                // Check for common text file types that would benefit from Notepad opening
+                return fileType.ToLowerInvariant() switch
+                {
+                    "text file" => true,
+                    "txt file" => true,
+                    _ => false,
+                };
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error($"Error checking if file is text: {ex.Message}");
+                return false;
             }
         }
 
