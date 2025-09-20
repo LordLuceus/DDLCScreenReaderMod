@@ -26,76 +26,11 @@ namespace DDLCScreenReaderMod
                     $"Choose from {activeCount} options",
                     TextType.Menu
                 );
-
-                // Output each choice
-                for (int i = 0; i < activeCount && i < entries.Count; i++)
-                {
-                    if (!string.IsNullOrWhiteSpace(entries[i].Text))
-                    {
-                        ClipboardUtils.OutputGameText(
-                            "",
-                            $"Option {i + 1}: {entries[i].Text}",
-                            TextType.MenuChoice
-                        );
-                    }
-                }
             }
             catch (System.Exception ex)
             {
                 ScreenReaderMod.Logger?.Error(
                     $"Error in RenpyChoiceMenuUI_ShowChoiceMenu_Postfix: {ex.Message}"
-                );
-            }
-        }
-
-        [HarmonyPatch(
-            typeof(RenpyChoiceEntryUI),
-            MethodType.Constructor,
-            new System.Type[] { typeof(string), typeof(object) }
-        )]
-        [HarmonyPostfix]
-        public static void RenpyChoiceEntryUI_Constructor_Postfix(
-            RenpyChoiceEntryUI __instance,
-            string text
-        )
-        {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(text))
-                {
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg($"Choice entry created: {text}");
-                    ClipboardUtils.OutputGameText("", text, TextType.MenuChoice);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error(
-                    $"Error in RenpyChoiceEntryUI_Constructor_Postfix: {ex.Message}"
-                );
-            }
-        }
-
-        [HarmonyPatch(typeof(RenpyChoiceEntryUI), "Text", MethodType.Setter)]
-        [HarmonyPostfix]
-        public static void RenpyChoiceEntryUI_Text_Setter_Postfix(
-            RenpyChoiceEntryUI __instance,
-            string value
-        )
-        {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(value))
-                {
-                    if (ModConfig.Instance.EnableVerboseLogging)
-                        ScreenReaderMod.Logger?.Msg($"Choice entry text set: {value}");
-                    ClipboardUtils.OutputGameText("", value, TextType.MenuChoice);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error(
-                    $"Error in RenpyChoiceEntryUI_Text_Setter_Postfix: {ex.Message}"
                 );
             }
         }
