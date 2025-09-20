@@ -7,6 +7,27 @@ namespace DDLCScreenReaderMod
     [HarmonyPatch]
     public static class SideStoriesPatches
     {
+        // Announce the side stories menu descriptive text
+        [HarmonyPatch(typeof(SideStoriesApp), "SetupLocalization")]
+        [HarmonyPostfix]
+        public static void SideStoriesApp_SetupLocalization_Postfix(SideStoriesApp __instance)
+        {
+            try
+            {
+                if (__instance?.sideStoreText != null && !string.IsNullOrWhiteSpace(__instance.sideStoreText.text))
+                {
+                    ScreenReaderMod.Logger?.Msg($"Side stories menu text: {__instance.sideStoreText.text}");
+                    ClipboardUtils.OutputGameText("", __instance.sideStoreText.text, TextType.Menu);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in SideStoriesApp_SetupLocalization_Postfix: {ex.Message}"
+                );
+            }
+        }
+
         // Side Stories app accessibility
         [HarmonyPatch(typeof(SideStoriesApp), "OnItemSelected")]
         [HarmonyPostfix]
