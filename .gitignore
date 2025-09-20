@@ -318,3 +318,6 @@ MigrationBackup/
 *.user
 *.userosscache
 *.sln.docstates
+
+# Claude Code
+.claude/

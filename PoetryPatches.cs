@@ -117,7 +117,15 @@ namespace DDLCScreenReaderMod
                             )
                             ?.GetValue(__instance);
 
+                    // Get character preferences for this word
+                    string characterReactions = GetCharacterReactions(word.Word);
+
                     string message = $"Selected '{wordText}'. Progress: {currentProgress}/20";
+                    if (!string.IsNullOrEmpty(characterReactions))
+                    {
+                        message += $". {characterReactions}";
+                    }
+
                     ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
                 }
             }
@@ -127,6 +135,33 @@ namespace DDLCScreenReaderMod
                     $"Error in PoetryGameScreen_OnWordSelected_Prefix: {ex.Message}"
                 );
             }
+        }
+
+        private static string GetCharacterReactions(
+            RenPyParser.VGPrompter.DataHolders.PoetryWord poetryWord
+        )
+        {
+            var reactions = new System.Collections.Generic.List<string>();
+
+            // Check each character's favor level (3+ seems to be the threshold for reactions based on the original code)
+            if (poetryWord.sayouriFavour >= 3)
+                reactions.Add("Sayori likes this");
+            if (poetryWord.natsukiFavour >= 3)
+                reactions.Add("Natsuki likes this");
+            if (poetryWord.yuriFavour >= 3)
+                reactions.Add("Yuri likes this");
+
+            if (reactions.Count == 0)
+                return "";
+
+            if (reactions.Count == 1)
+                return reactions[0];
+
+            if (reactions.Count == 2)
+                return $"{reactions[0]} and {reactions[1]}";
+
+            // All three like it
+            return $"{reactions[0]}, {reactions[1]}, and {reactions[2]}";
         }
     }
 }

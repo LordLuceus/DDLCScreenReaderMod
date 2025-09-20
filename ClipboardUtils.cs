@@ -1,40 +1,11 @@
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using MelonLoader;
+using UnityEngine;
 
 namespace DDLCScreenReaderMod
 {
     public static class ClipboardUtils
     {
-        [DllImport("user32.dll")]
-        private static extern bool OpenClipboard(IntPtr hWndNewOwner);
-
-        [DllImport("user32.dll")]
-        private static extern bool CloseClipboard();
-
-        [DllImport("user32.dll")]
-        private static extern bool EmptyClipboard();
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetClipboardData(uint uFormat, IntPtr hMem);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr GlobalAlloc(uint uFlags, UIntPtr dwBytes);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr GlobalLock(IntPtr hMem);
-
-        [DllImport("kernel32.dll")]
-        private static extern bool GlobalUnlock(IntPtr hMem);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr GlobalFree(IntPtr hMem);
-
-        private const uint CF_UNICODETEXT = 13;
-        private const uint GMEM_MOVEABLE = 0x0002;
-
         private static string lastText = "";
         private static DateTime lastUpdate = DateTime.MinValue;
         private static readonly TimeSpan MinUpdateInterval = TimeSpan.FromMilliseconds(500); // Increased to reduce duplicates
@@ -95,58 +66,15 @@ namespace DDLCScreenReaderMod
 
             try
             {
-                return SetClipboardTextInternal(text);
+                GUIUtility.systemCopyBuffer = text;
+                lastText = text;
+                lastUpdate = DateTime.Now;
+                return true;
             }
             catch (Exception ex)
             {
                 ScreenReaderMod.Logger?.Error($"Failed to set clipboard text: {ex.Message}");
                 return false;
-            }
-        }
-
-        private static bool SetClipboardTextInternal(string text)
-        {
-            if (!OpenClipboard(IntPtr.Zero))
-                return false;
-
-            try
-            {
-                EmptyClipboard();
-
-                byte[] bytes = Encoding.Unicode.GetBytes(text + "\0");
-                IntPtr hGlobal = GlobalAlloc(GMEM_MOVEABLE, (UIntPtr)bytes.Length);
-
-                if (hGlobal == IntPtr.Zero)
-                    return false;
-
-                try
-                {
-                    IntPtr lpMem = GlobalLock(hGlobal);
-                    if (lpMem != IntPtr.Zero)
-                    {
-                        Marshal.Copy(bytes, 0, lpMem, bytes.Length);
-                        GlobalUnlock(hGlobal);
-
-                        if (SetClipboardData(CF_UNICODETEXT, hGlobal) != IntPtr.Zero)
-                        {
-                            lastText = text;
-                            lastUpdate = DateTime.Now;
-                            return true;
-                        }
-                    }
-
-                    GlobalFree(hGlobal);
-                    return false;
-                }
-                catch
-                {
-                    GlobalFree(hGlobal);
-                    throw;
-                }
-            }
-            finally
-            {
-                CloseClipboard();
             }
         }
 

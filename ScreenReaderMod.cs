@@ -8,9 +8,11 @@ namespace DDLCScreenReaderMod
     public class ScreenReaderMod : MelonMod
     {
         public static MelonLogger.Instance Logger { get; private set; }
+        public static ScreenReaderMod Instance { get; private set; }
 
         public override void OnInitializeMelon()
         {
+            Instance = this;
             Logger = LoggerInstance;
             Logger.Msg("DDLC Screen Reader Mod initialized!");
 
