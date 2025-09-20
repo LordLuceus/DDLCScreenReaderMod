@@ -40,6 +40,21 @@ namespace DDLCScreenReaderMod
             }
         }
 
+        public override void OnUpdate()
+        {
+            try
+            {
+                if (Input.GetKeyDown(ModConfig.Instance.RepeatDialogueHotkey))
+                {
+                    ClipboardUtils.RepeatCurrentDialogue();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error in OnUpdate: {ex.Message}");
+            }
+        }
+
         public override void OnApplicationQuit()
         {
             Logger.Msg("DDLC Application quitting - Screen Reader Mod cleanup");

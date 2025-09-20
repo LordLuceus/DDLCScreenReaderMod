@@ -5,14 +5,18 @@ namespace DDLCScreenReaderMod
 {
     public static class SpeakerMapping
     {
-        private static readonly Dictionary<string, string> CharacterMap = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> CharacterMap = new Dictionary<
+            string,
+            string
+        >
         {
             { "s", "Sayori" },
             { "n", "Natsuki" },
             { "y", "Yuri" },
             { "m", "Monika" },
-            { "dc", "" },    // Developer Commentary - filter out
-            { "", "" }       // Narrator/empty
+            { "ny", "Natsuki and Yuri" },
+            { "dc", "" }, // Developer Commentary - filter out
+            { "", "" }, // Narrator/empty
         };
 
         public static string GetSpeakerName(string code)
@@ -36,7 +40,9 @@ namespace DDLCScreenReaderMod
                 // Try to get the player's chosen name from the game
                 if (Renpy.CurrentContext != null)
                 {
-                    string playerName = Renpy.CurrentContext.GetVariableString("persistent.playername");
+                    string playerName = Renpy.CurrentContext.GetVariableString(
+                        "persistent.playername"
+                    );
                     if (!string.IsNullOrEmpty(playerName))
                         return playerName;
 

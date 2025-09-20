@@ -3,6 +3,7 @@ using System.IO;
 using MelonLoader;
 using MelonLoader.Utils;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace DDLCScreenReaderMod
 {
@@ -59,6 +60,9 @@ namespace DDLCScreenReaderMod
 
         [JsonProperty("maxTextLength")]
         public int MaxTextLength { get; set; } = 1000;
+
+        [JsonProperty("repeatDialogueHotkey")]
+        public KeyCode RepeatDialogueHotkey { get; set; } = KeyCode.R;
 
         public static void LoadConfig()
         {

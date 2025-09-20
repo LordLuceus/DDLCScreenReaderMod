@@ -39,6 +39,10 @@ namespace DDLCScreenReaderMod
         private static DateTime lastUpdate = DateTime.MinValue;
         private static readonly TimeSpan MinUpdateInterval = TimeSpan.FromMilliseconds(500); // Increased to reduce duplicates
 
+        private static string currentDialogueSpeaker = "";
+        private static string currentDialogueText = "";
+        private static TextType currentDialogueType = TextType.Dialogue;
+
         public static void Initialize()
         {
             ScreenReaderMod.Logger?.Msg("ClipboardUtils initialized");
@@ -47,6 +51,38 @@ namespace DDLCScreenReaderMod
         public static void Cleanup()
         {
             ScreenReaderMod.Logger?.Msg("ClipboardUtils cleanup");
+        }
+
+        public static void RepeatCurrentDialogue()
+        {
+            if (!string.IsNullOrWhiteSpace(currentDialogueText))
+            {
+                string formattedText = FormatTextForScreenReader(
+                    currentDialogueSpeaker,
+                    currentDialogueText,
+                    currentDialogueType
+                );
+
+                // Temporarily disable duplicate filtering for repeat
+                string tempLastText = lastText;
+                DateTime tempLastUpdate = lastUpdate;
+
+                lastText = "";
+                lastUpdate = DateTime.MinValue;
+
+                if (SetClipboardText(formattedText))
+                {
+                    ScreenReaderMod.Logger?.Msg($"Repeated dialogue: '{formattedText}'");
+                }
+
+                // Restore duplicate filtering state
+                lastText = tempLastText;
+                lastUpdate = tempLastUpdate;
+            }
+            else
+            {
+                ScreenReaderMod.Logger?.Msg("No dialogue available to repeat");
+            }
         }
 
         public static bool SetClipboardText(string text)
@@ -135,6 +171,14 @@ namespace DDLCScreenReaderMod
 
             if (SetClipboardText(formattedText))
             {
+                // Store current dialogue for repeat functionality
+                if (textType == TextType.Dialogue || textType == TextType.Narrator)
+                {
+                    currentDialogueSpeaker = speaker ?? "";
+                    currentDialogueText = text;
+                    currentDialogueType = textType;
+                }
+
                 // Always log clipboard output for debugging speaker names
                 ScreenReaderMod.Logger?.Msg(
                     $"[{textType}] Clipboard: '{formattedText}' (Speaker: '{speaker}')"
@@ -192,6 +236,6 @@ namespace DDLCScreenReaderMod
         MenuChoice,
         Menu,
         SystemMessage,
-        Narrator
+        Narrator,
     }
 }

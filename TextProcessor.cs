@@ -67,6 +67,19 @@ namespace DDLCScreenReaderMod
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
 
+        private static readonly Regex HtmlItalicTagRegex = new Regex(
+            @"<i>|</i>",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase
+        );
+        private static readonly Regex HtmlBoldTagRegex = new Regex(
+            @"<b>|</b>",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase
+        );
+        private static readonly Regex HtmlUnderlineTagRegex = new Regex(
+            @"<u>|</u>",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase
+        );
+
         private static readonly Regex MultipleWhitespaceRegex = new Regex(
             @"\s+",
             RegexOptions.Compiled
@@ -94,6 +107,10 @@ namespace DDLCScreenReaderMod
             cleaned = ClearTagRegex.Replace(cleaned, "");
             cleaned = FontTagRegex.Replace(cleaned, "");
             cleaned = AlphaTagRegex.Replace(cleaned, "");
+
+            cleaned = HtmlItalicTagRegex.Replace(cleaned, "");
+            cleaned = HtmlBoldTagRegex.Replace(cleaned, "");
+            cleaned = HtmlUnderlineTagRegex.Replace(cleaned, "");
 
             cleaned = MultipleWhitespaceRegex.Replace(cleaned.Trim(), " ");
 

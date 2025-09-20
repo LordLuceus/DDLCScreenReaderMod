@@ -75,7 +75,7 @@ namespace DDLCScreenReaderMod
                 typeof(bool),
                 typeof(int),
                 typeof(System.Collections.Generic.List<System.Tuple<int, float>>),
-                typeof(string)
+                typeof(string),
             }
         )]
         [HarmonyPostfix]
@@ -96,7 +96,9 @@ namespace DDLCScreenReaderMod
                     // Filter out unwanted text
                     if (SpeakerMapping.ShouldFilterText(text, speakerCode))
                     {
-                        ScreenReaderMod.Logger?.Msg($"Filtered out text: Speaker: '{speakerCode}', Text: '{text}'");
+                        ScreenReaderMod.Logger?.Msg(
+                            $"Filtered out text: Speaker: '{speakerCode}', Text: '{text}'"
+                        );
                         return;
                     }
 
@@ -111,7 +113,11 @@ namespace DDLCScreenReaderMod
                     // If we have a speaker name, always treat as dialogue
                     TextType textType = !string.IsNullOrWhiteSpace(speakerName)
                         ? TextType.Dialogue
-                        : (TextProcessor.IsNarrativeText(text) ? TextType.Narrator : TextType.Dialogue);
+                        : (
+                            TextProcessor.IsNarrativeText(text)
+                                ? TextType.Narrator
+                                : TextType.Dialogue
+                        );
                     ClipboardUtils.OutputGameText(speakerName, text, textType);
                 }
             }
@@ -138,7 +144,9 @@ namespace DDLCScreenReaderMod
                     // Filter out unwanted text
                     if (SpeakerMapping.ShouldFilterText(value, speakerCode))
                     {
-                        ScreenReaderMod.Logger?.Msg($"Filtered out text update: Speaker: '{speakerCode}', Text: '{value}'");
+                        ScreenReaderMod.Logger?.Msg(
+                            $"Filtered out text update: Speaker: '{speakerCode}', Text: '{value}'"
+                        );
                         return;
                     }
 
@@ -153,7 +161,11 @@ namespace DDLCScreenReaderMod
                     // If we have a speaker name, always treat as dialogue
                     TextType textType = !string.IsNullOrWhiteSpace(speakerName)
                         ? TextType.Dialogue
-                        : (TextProcessor.IsNarrativeText(value) ? TextType.Narrator : TextType.Dialogue);
+                        : (
+                            TextProcessor.IsNarrativeText(value)
+                                ? TextType.Narrator
+                                : TextType.Dialogue
+                        );
                     ClipboardUtils.OutputGameText(speakerName, value, textType);
                 }
             }
