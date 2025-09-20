@@ -64,6 +64,9 @@ namespace DDLCScreenReaderMod
         [JsonProperty("repeatDialogueHotkey")]
         public KeyCode RepeatDialogueHotkey { get; set; } = KeyCode.R;
 
+        [JsonProperty("enablePoetryGameAnnouncements")]
+        public bool EnablePoetryGameAnnouncements { get; set; } = true;
+
         public static void LoadConfig()
         {
             try
@@ -136,6 +139,8 @@ namespace DDLCScreenReaderMod
                     return EnableSystemMessages;
                 case TextType.Narrator:
                     return EnableNarrator;
+                case TextType.PoetryGame:
+                    return EnablePoetryGameAnnouncements;
                 default:
                     return true;
             }

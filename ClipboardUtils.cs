@@ -224,6 +224,9 @@ namespace DDLCScreenReaderMod
                 case TextType.Narrator:
                     return text;
 
+                case TextType.PoetryGame:
+                    return text;
+
                 default:
                     return text;
             }
@@ -237,5 +240,6 @@ namespace DDLCScreenReaderMod
         Menu,
         SystemMessage,
         Narrator,
+        PoetryGame,
     }
 }
