@@ -148,6 +148,7 @@ namespace DDLCScreenReaderMod
                 case TextType.Menu:
                 case TextType.SystemMessage:
                 case TextType.PoetryGame:
+                case TextType.Settings:
                     return text;
 
                 case TextType.Poem:
@@ -171,5 +172,6 @@ namespace DDLCScreenReaderMod
         PoetryGame,
         FileBrowser,
         Poem,
+        Settings,
     }
 }

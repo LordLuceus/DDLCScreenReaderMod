@@ -2,6 +2,7 @@ using HarmonyLib;
 using RenpyParser;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Reflection;
 
 namespace DDLCScreenReaderMod
 {
@@ -142,7 +143,18 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (
+                // Check if this is a RenpyToggleButtonUI with a preference type (settings)
+                if (__instance is RenpyToggleButtonUI toggleButton && toggleButton.PreferenceType.HasValue)
+                {
+                    string settingName = PreferenceTypeNames.GetFriendlyName(toggleButton.PreferenceType.Value);
+                    string currentState = PreferenceTypeNames.FormatToggleState(toggleButton.isOn);
+                    string announcement = $"{settingName}, {currentState}";
+
+                    ScreenReaderMod.Logger?.Msg($"Toggle focused: {announcement}");
+                    ClipboardUtils.OutputGameText("", announcement, TextType.Settings);
+                }
+                // Regular button handling (existing functionality)
+                else if (
                     __instance.textObject != null
                     && !string.IsNullOrWhiteSpace(__instance.textObject.text)
                 )
@@ -156,6 +168,75 @@ namespace DDLCScreenReaderMod
             {
                 ScreenReaderMod.Logger?.Error(
                     $"Error in RenpyButtonUI_OnButtonFocussed_Postfix: {ex.Message}"
+                );
+            }
+        }
+
+        [HarmonyPatch(typeof(RenpySliderUI), "OnSliderFocussed")]
+        [HarmonyPostfix]
+        public static void RenpySliderUI_OnSliderFocussed_Postfix(RenpySliderUI __instance)
+        {
+            try
+            {
+                if (__instance.PreferenceType == 0)
+                    return;
+
+                string settingName = PreferenceTypeNames.GetFriendlyName(__instance.PreferenceType);
+                string currentValue = PreferenceTypeNames.FormatSliderValue(__instance.Value, __instance.PreferenceType);
+                string announcement = $"{settingName}, {currentValue}";
+
+                ScreenReaderMod.Logger?.Msg($"Slider focused: {announcement}");
+                ClipboardUtils.OutputGameText("", announcement, TextType.Settings);
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in RenpySliderUI_OnSliderFocussed_Postfix: {ex.Message}"
+                );
+            }
+        }
+
+        [HarmonyPatch(typeof(RenpySliderUI), "SliderValueChanged")]
+        [HarmonyPostfix]
+        public static void RenpySliderUI_SliderValueChanged_Postfix(RenpySliderUI __instance, UnityEngine.UI.Slider s)
+        {
+            try
+            {
+                if (!s.interactable || __instance.PreferenceType == 0)
+                    return;
+
+                string newValue = PreferenceTypeNames.FormatSliderValue(s.value, __instance.PreferenceType);
+
+                ScreenReaderMod.Logger?.Msg($"Slider value changed: {newValue}");
+                ClipboardUtils.OutputGameText("", newValue, TextType.Settings);
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in RenpySliderUI_SliderValueChanged_Postfix: {ex.Message}"
+                );
+            }
+        }
+
+
+        [HarmonyPatch(typeof(RenpyToggleButtonUI), "isOn", MethodType.Setter)]
+        [HarmonyPostfix]
+        public static void RenpyToggleButtonUI_isOn_Setter_Postfix(RenpyToggleButtonUI __instance, bool value)
+        {
+            try
+            {
+                if (!__instance.PreferenceType.HasValue)
+                    return;
+
+                string newState = PreferenceTypeNames.FormatToggleState(value);
+
+                ScreenReaderMod.Logger?.Msg($"Toggle value changed: {newState}");
+                ClipboardUtils.OutputGameText("", newState, TextType.Settings);
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in RenpyToggleButtonUI_isOn_Setter_Postfix: {ex.Message}"
                 );
             }
         }
