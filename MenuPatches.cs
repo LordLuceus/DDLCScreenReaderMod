@@ -219,16 +219,16 @@ namespace DDLCScreenReaderMod
         }
 
 
-        [HarmonyPatch(typeof(RenpyToggleButtonUI), "isOn", MethodType.Setter)]
+        [HarmonyPatch(typeof(RenpyToggleButtonUI), "OnValueChanged")]
         [HarmonyPostfix]
-        public static void RenpyToggleButtonUI_isOn_Setter_Postfix(RenpyToggleButtonUI __instance, bool value)
+        public static void RenpyToggleButtonUI_OnValueChanged_Postfix(RenpyToggleButtonUI __instance, bool newValue)
         {
             try
             {
                 if (!__instance.PreferenceType.HasValue)
                     return;
 
-                string newState = PreferenceTypeNames.FormatToggleState(value);
+                string newState = PreferenceTypeNames.FormatToggleState(newValue);
 
                 ScreenReaderMod.Logger?.Msg($"Toggle value changed: {newState}");
                 ClipboardUtils.OutputGameText("", newState, TextType.Settings);
@@ -236,7 +236,7 @@ namespace DDLCScreenReaderMod
             catch (System.Exception ex)
             {
                 ScreenReaderMod.Logger?.Error(
-                    $"Error in RenpyToggleButtonUI_isOn_Setter_Postfix: {ex.Message}"
+                    $"Error in RenpyToggleButtonUI_OnValueChanged_Postfix: {ex.Message}"
                 );
             }
         }
