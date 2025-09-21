@@ -7,5 +7,5 @@
 - [x] Read poems
 - [x] Read sections of preferences menu
 - [ ] Fix act 1 ending scene exception not being read
-- [ ] Fix act 2 poem reactions
+- [x] Fix act 2 poem reactions
 - [x] Fix confirmation dialogues

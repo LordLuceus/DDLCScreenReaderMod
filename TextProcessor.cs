@@ -116,6 +116,9 @@ namespace DDLCScreenReaderMod
 
             cleaned = UnescapeSpecialCharacters(cleaned);
 
+            cleaned = cleaned.Replace("<br>", "\n").Replace("<br/>", "\n").Replace("<br />", "\n");
+            cleaned = cleaned.Replace("<color=#000>", "").Replace("</color>", "");
+
             return cleaned;
         }
 
