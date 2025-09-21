@@ -5,4 +5,7 @@
 - [x] Fix file browser context menu
 - [x] Get rid of config
 - [x] Read poems
-- [ ] Read sections of preferences menu
+- [x] Read sections of preferences menu
+- [ ] Fix act 1 ending scene exception not being read
+- [ ] Fix act 2 poem reactions
+- [x] Fix confirmation dialogues

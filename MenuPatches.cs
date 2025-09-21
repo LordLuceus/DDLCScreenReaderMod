@@ -103,19 +103,23 @@ namespace DDLCScreenReaderMod
             }
         }
 
-        [HarmonyPatch(typeof(RenpyConfirmScreenUI), "OnShow")]
+        [HarmonyPatch(typeof(RenpyConfirmScreenUI), "SetData")]
         [HarmonyPostfix]
-        public static void RenpyConfirmScreenUI_OnShow_Postfix(RenpyConfirmScreenUI __instance)
+        public static void RenpyConfirmScreenUI_SetData_Postfix(RenpyConfirmScreenUI __instance, string messageStr)
         {
             try
             {
-                ScreenReaderMod.Logger?.Msg("Confirmation dialog shown");
-                ClipboardUtils.OutputGameText("", "Confirmation dialog", TextType.SystemMessage);
+                if (!string.IsNullOrWhiteSpace(messageStr))
+                {
+                    string processedMessage = TextProcessor.CleanText(messageStr);
+                    ScreenReaderMod.Logger?.Msg($"Confirmation dialog message: {processedMessage}");
+                    ClipboardUtils.OutputGameText("", processedMessage, TextType.SystemMessage);
+                }
             }
             catch (System.Exception ex)
             {
                 ScreenReaderMod.Logger?.Error(
-                    $"Error in RenpyConfirmScreenUI_OnShow_Postfix: {ex.Message}"
+                    $"Error in RenpyConfirmScreenUI_SetData_Postfix: {ex.Message}"
                 );
             }
         }
