@@ -107,11 +107,14 @@ namespace DDLCScreenReaderMod
                 // Get character preferences for this word
                 string characterReactions = GetCharacterReactions(word.Word);
 
-                string message = $"Selected '{wordText}'. Progress: {currentProgress}/20";
-                if (!string.IsNullOrEmpty(characterReactions))
+                string message = "";
+
+                if (!string.IsNullOrWhiteSpace(characterReactions))
                 {
-                    message += $". {characterReactions}";
+                    message = characterReactions;
                 }
+
+                message += (message.Length > 0 ? ". " : "") + $"Progress: {currentProgress}/20";
 
                 ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
             }
