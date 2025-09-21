@@ -132,13 +132,48 @@ namespace DDLCScreenReaderMod
         {
             var reactions = new System.Collections.Generic.List<string>();
 
-            // Check each character's favor level (3+ seems to be the threshold for reactions based on the original code)
-            if (poetryWord.sayouriFavour >= 3)
-                reactions.Add("Sayori likes this");
-            if (poetryWord.natsukiFavour >= 3)
-                reactions.Add("Natsuki likes this");
-            if (poetryWord.yuriFavour >= 3)
-                reactions.Add("Yuri likes this");
+            // Get current playthrough to determine which characters are available
+            int playthrough = GetCurrentPlaythrough();
+
+            if (playthrough == 0)
+            {
+                // Act 1: Show all character reactions based on individual favor levels
+                if (poetryWord.sayouriFavour >= 3)
+                    reactions.Add("Sayori likes this");
+                if (poetryWord.natsukiFavour >= 3)
+                    reactions.Add("Natsuki likes this");
+                if (poetryWord.yuriFavour >= 3)
+                    reactions.Add("Yuri likes this");
+            }
+            else if (playthrough >= 1 && playthrough <= 2)
+            {
+                // Act 2: Only show Natsuki vs Yuri reactions (Sayori is gone 😭)
+                // Based on the game logic: if natsukiFavour > yuriFavour, show Natsuki, else show Yuri
+                if (poetryWord.natsukiFavour > poetryWord.yuriFavour)
+                {
+                    reactions.Add("Natsuki likes this");
+                }
+                else
+                {
+                    reactions.Add("Yuri likes this");
+                }
+            }
+            else if (playthrough == 3)
+            {
+                // Act 3: Only Monika exists, but she doesn't have favor values in the original poetry word data
+                // The game doesn't show reactions in Act 3, so we'll return empty
+                return "";
+            }
+            else if (playthrough == 4)
+            {
+                // Act 4: Similar to Act 1 but without Monika - though this might not have poetry games
+                if (poetryWord.sayouriFavour >= 3)
+                    reactions.Add("Sayori likes this");
+                if (poetryWord.natsukiFavour >= 3)
+                    reactions.Add("Natsuki likes this");
+                if (poetryWord.yuriFavour >= 3)
+                    reactions.Add("Yuri likes this");
+            }
 
             if (reactions.Count == 0)
                 return "";
@@ -149,8 +184,24 @@ namespace DDLCScreenReaderMod
             if (reactions.Count == 2)
                 return $"{reactions[0]} and {reactions[1]}";
 
-            // All three like it
+            // All three like it (only possible in Acts 1 and 4)
             return $"{reactions[0]}, {reactions[1]}, and {reactions[2]}";
+        }
+
+        private static int GetCurrentPlaythrough()
+        {
+            try
+            {
+                return (int)
+                    System.Math.Floor(
+                        Renpy.CurrentContext.GetVariableFloat("persistent.playthrough")
+                    );
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error($"Error getting playthrough: {ex.Message}");
+                return 0; // Default to playthrough 0 if we can't determine it
+            }
         }
     }
 }
