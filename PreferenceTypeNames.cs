@@ -43,7 +43,7 @@ namespace DDLCScreenReaderMod
                     return $"{(int)(value * 100)}%";
 
                 case PreferenceType.TextSpeed:
-                    return $"{(int)(value * 100)}%";
+                    return $"{(int)value} characters per second";
 
                 case PreferenceType.AutoForwardTime:
                     return $"{value:F1} seconds";

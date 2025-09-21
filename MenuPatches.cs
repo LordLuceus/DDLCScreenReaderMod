@@ -178,9 +178,6 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (__instance.PreferenceType == 0)
-                    return;
-
                 string settingName = PreferenceTypeNames.GetFriendlyName(__instance.PreferenceType);
                 string currentValue = PreferenceTypeNames.FormatSliderValue(__instance.Value, __instance.PreferenceType);
                 string announcement = $"{settingName}, {currentValue}";
@@ -202,7 +199,7 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (!s.interactable || __instance.PreferenceType == 0)
+                if (!s.interactable)
                     return;
 
                 string newValue = PreferenceTypeNames.FormatSliderValue(s.value, __instance.PreferenceType);
