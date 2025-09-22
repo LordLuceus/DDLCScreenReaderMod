@@ -1,87 +1,46 @@
-using System;
-using MelonLoader;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace DDLCScreenReaderMod
 {
     public static class ClipboardUtils
     {
-        private static string lastText = "";
-        private static DateTime lastUpdate = DateTime.MinValue;
-        private static readonly TimeSpan MinUpdateInterval = TimeSpan.FromMilliseconds(500); // Increased to reduce duplicates
+        private static readonly Queue<string> MessageQueue = new Queue<string>();
 
-        private static string currentDialogueSpeaker = "";
-        private static string currentDialogueText = "";
-        private static TextType currentDialogueType = TextType.Dialogue;
+        private static string _currentDialogueSpeaker = "";
+        private static string _currentDialogueText = "";
+        private static TextType _currentDialogueType = TextType.Dialogue;
 
-        public static void Initialize()
+        public static string DequeueMessage()
         {
-            ScreenReaderMod.Logger?.Msg("ClipboardUtils initialized");
+            if (MessageQueue.Count > 0)
+            {
+                return MessageQueue.Dequeue();
+            }
+            return null;
         }
 
-        public static void Cleanup()
+        private static void EnqueueText(string text)
         {
-            ScreenReaderMod.Logger?.Msg("ClipboardUtils cleanup");
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+            MessageQueue.Enqueue(text);
         }
 
         public static void RepeatCurrentDialogue()
         {
-            if (!string.IsNullOrWhiteSpace(currentDialogueText))
+            if (!string.IsNullOrWhiteSpace(_currentDialogueText))
             {
                 string formattedText = FormatTextForScreenReader(
-                    currentDialogueSpeaker,
-                    currentDialogueText,
-                    currentDialogueType
+                    _currentDialogueSpeaker,
+                    _currentDialogueText,
+                    _currentDialogueType
                 );
-
-                // Temporarily disable duplicate filtering for repeat
-                string tempLastText = lastText;
-                DateTime tempLastUpdate = lastUpdate;
-
-                lastText = "";
-                lastUpdate = DateTime.MinValue;
-
-                if (SetClipboardText(formattedText, currentDialogueType))
-                {
-                    ScreenReaderMod.Logger?.Msg($"Repeated dialogue: '{formattedText}'");
-                }
-
-                // Restore duplicate filtering state
-                lastText = tempLastText;
-                lastUpdate = tempLastUpdate;
+                EnqueueText(formattedText);
+                ScreenReaderMod.Logger?.Msg($"Re-queued dialogue for repeat: '{formattedText}'");
             }
             else
             {
                 ScreenReaderMod.Logger?.Msg("No dialogue available to repeat");
-            }
-        }
-
-        public static bool SetClipboardText(string text, TextType textType = TextType.Dialogue)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return false;
-
-            // SystemMessages should bypass rate limiting to ensure important announcements are never missed
-            bool shouldBypassRateLimit = textType == TextType.SystemMessage;
-
-            if (
-                !shouldBypassRateLimit
-                && text == lastText
-                && DateTime.Now - lastUpdate < MinUpdateInterval
-            )
-                return false;
-
-            try
-            {
-                GUIUtility.systemCopyBuffer = text;
-                lastText = text;
-                lastUpdate = DateTime.Now;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error($"Failed to set clipboard text: {ex.Message}");
-                return false;
             }
         }
 
@@ -93,40 +52,34 @@ namespace DDLCScreenReaderMod
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
-
             string formattedText = FormatTextForScreenReader(speaker, text, textType);
 
-            if (SetClipboardText(formattedText, textType))
+            if (textType == TextType.Dialogue || textType == TextType.Narrator)
             {
-                // Store current dialogue for repeat functionality
-                if (textType == TextType.Dialogue || textType == TextType.Narrator)
-                {
-                    currentDialogueSpeaker = speaker ?? "";
-                    currentDialogueText = text;
-                    currentDialogueType = textType;
-                }
-
-                // Always log clipboard output for debugging speaker names
-                ScreenReaderMod.Logger?.Msg(
-                    $"[{textType}] Clipboard: '{formattedText}' (Speaker: '{speaker}')"
-                );
+                _currentDialogueSpeaker = speaker ?? "";
+                _currentDialogueText = text;
+                _currentDialogueType = textType;
             }
+
+            EnqueueText(formattedText);
+
+            ScreenReaderMod.Logger?.Msg(
+                $"[{textType}] Queued: '{formattedText}' (Speaker: '{speaker}')"
+            );
         }
 
         public static void OutputPoemText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
+            string formattedText = FormatTextForScreenReader("", text, TextType.Poem);
 
-            if (SetClipboardText(text, TextType.Poem))
-            {
-                // Store current dialogue for repeat functionality
-                currentDialogueSpeaker = "";
-                currentDialogueText = text;
-                currentDialogueType = TextType.Poem;
+            _currentDialogueSpeaker = "";
+            _currentDialogueText = text;
+            _currentDialogueType = TextType.Poem;
 
-                ScreenReaderMod.Logger?.Msg($"[Poem] Clipboard: '{text}'");
-            }
+            EnqueueText(formattedText);
+            ScreenReaderMod.Logger?.Msg($"[Poem] Queued: '{formattedText}'");
         }
 
         private static string FormatTextForScreenReader(
@@ -143,19 +96,6 @@ namespace DDLCScreenReaderMod
                     if (!string.IsNullOrWhiteSpace(speaker))
                         return $"{speaker}: {text}";
                     return text;
-
-                case TextType.MenuChoice:
-                case TextType.Menu:
-                case TextType.SystemMessage:
-                case TextType.PoetryGame:
-                case TextType.Settings:
-                    return text;
-
-                case TextType.Poem:
-                    if (!string.IsNullOrWhiteSpace(speaker))
-                        return $"{speaker}: {text}";
-                    return text;
-
                 default:
                     return text;
             }
