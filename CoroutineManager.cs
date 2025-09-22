@@ -8,7 +8,7 @@ namespace DDLCScreenReaderMod
         public static CoroutineManager Instance { get; private set; }
 
         private Coroutine _clipboardCoroutine;
-        private const float _clipboardProcessInterval = 0.05f; // Interval in seconds
+        private const float _clipboardProcessInterval = 0.015f; // Interval in seconds
 
         void Awake()
         {

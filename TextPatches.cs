@@ -18,9 +18,7 @@ namespace DDLCScreenReaderMod
         {
             var now = System.DateTime.Now;
 
-            bool isDuplicate =
-                text == lastTextValue
-                && (now - lastTextTime) < TextDuplicateWindow;
+            bool isDuplicate = text == lastTextValue && (now - lastTextTime) < TextDuplicateWindow;
 
             if (!isDuplicate)
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace DDLCScreenReaderMod
@@ -9,6 +10,10 @@ namespace DDLCScreenReaderMod
         private static string _currentDialogueSpeaker = "";
         private static string _currentDialogueText = "";
         private static TextType _currentDialogueType = TextType.Dialogue;
+
+        private static string _lastEnqueuedMessage = "";
+        private static DateTime _lastEnqueueTime = DateTime.MinValue;
+        private const double DuplicateWindowSeconds = 0.5;
 
         public static string DequeueMessage()
         {
@@ -23,6 +28,18 @@ namespace DDLCScreenReaderMod
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
+
+            DateTime now = DateTime.UtcNow;
+            if (
+                text == _lastEnqueuedMessage
+                && (now - _lastEnqueueTime).TotalSeconds < DuplicateWindowSeconds
+            )
+            {
+                return;
+            }
+
+            _lastEnqueuedMessage = text;
+            _lastEnqueueTime = now;
             MessageQueue.Enqueue(text);
         }
 
