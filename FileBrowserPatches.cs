@@ -11,6 +11,7 @@ namespace DDLCScreenReaderMod
         // File browser state tracking
         private static string lastSelectedFileItem = "";
         private static string lastAnnouncedDirectory = "";
+        private static bool shouldCheckInitialSelection = false;
 
         // File Browser Accessibility Patches
 
@@ -31,6 +32,7 @@ namespace DDLCScreenReaderMod
                     if (!string.IsNullOrWhiteSpace(itemText) && itemText != lastSelectedFileItem)
                     {
                         lastSelectedFileItem = itemText;
+                        shouldCheckInitialSelection = false; // Reset flag since we have a manual selection
 
                         ScreenReaderMod.Logger?.Msg($"File browser item selected: {itemText}");
 
@@ -66,12 +68,41 @@ namespace DDLCScreenReaderMod
                         )
                         {
                             lastAnnouncedDirectory = directoryInfo;
+                            shouldCheckInitialSelection = true;
 
                             ScreenReaderMod.Logger?.Msg(
                                 $"File browser directory changed: {directoryInfo}"
                             );
 
                             ClipboardUtils.OutputGameText("", directoryInfo, TextType.FileBrowser);
+                        }
+
+                        // Check for initial selection after directory change
+                        if (shouldCheckInitialSelection)
+                        {
+                            var currentSelection = GetCurrentSelectedItem(__instance);
+                            if (currentSelection != null)
+                            {
+                                string itemText = FormatFileBrowserItem(currentSelection);
+                                if (
+                                    !string.IsNullOrWhiteSpace(itemText)
+                                    && itemText != lastSelectedFileItem
+                                )
+                                {
+                                    lastSelectedFileItem = itemText;
+                                    shouldCheckInitialSelection = false;
+
+                                    ScreenReaderMod.Logger?.Msg(
+                                        $"File browser item selected (initial): {itemText}"
+                                    );
+
+                                    ClipboardUtils.OutputGameText(
+                                        "",
+                                        itemText,
+                                        TextType.FileBrowser
+                                    );
+                                }
+                            }
                         }
                     }
                 }

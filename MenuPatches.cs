@@ -1,8 +1,8 @@
+using System.Reflection;
 using HarmonyLib;
 using RenpyParser;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Reflection;
 
 namespace DDLCScreenReaderMod
 {
@@ -76,7 +76,7 @@ namespace DDLCScreenReaderMod
             try
             {
                 ScreenReaderMod.Logger?.Msg("History menu shown");
-                ClipboardUtils.OutputGameText("", "History menu", TextType.Menu);
+                ClipboardUtils.OutputGameText("", "History", TextType.Menu);
             }
             catch (System.Exception ex)
             {
@@ -105,7 +105,10 @@ namespace DDLCScreenReaderMod
 
         [HarmonyPatch(typeof(RenpyConfirmScreenUI), "SetData")]
         [HarmonyPostfix]
-        public static void RenpyConfirmScreenUI_SetData_Postfix(RenpyConfirmScreenUI __instance, string messageStr)
+        public static void RenpyConfirmScreenUI_SetData_Postfix(
+            RenpyConfirmScreenUI __instance,
+            string messageStr
+        )
         {
             try
             {
@@ -126,7 +129,10 @@ namespace DDLCScreenReaderMod
 
         [HarmonyPatch(typeof(RenpyNameInputScreenUI), "SetData")]
         [HarmonyPostfix]
-        public static void RenpyNameInputScreenUI_SetData_Postfix(RenpyNameInputScreenUI __instance, string messageStr)
+        public static void RenpyNameInputScreenUI_SetData_Postfix(
+            RenpyNameInputScreenUI __instance,
+            string messageStr
+        )
         {
             try
             {
@@ -148,9 +154,14 @@ namespace DDLCScreenReaderMod
             try
             {
                 // Check if this is a RenpyToggleButtonUI with a preference type (settings)
-                if (__instance is RenpyToggleButtonUI toggleButton && toggleButton.PreferenceType.HasValue)
+                if (
+                    __instance is RenpyToggleButtonUI toggleButton
+                    && toggleButton.PreferenceType.HasValue
+                )
                 {
-                    string settingName = PreferenceTypeNames.GetFriendlyName(toggleButton.PreferenceType.Value);
+                    string settingName = PreferenceTypeNames.GetFriendlyName(
+                        toggleButton.PreferenceType.Value
+                    );
                     string currentState = PreferenceTypeNames.FormatToggleState(toggleButton.isOn);
                     string announcement = $"{settingName}, {currentState}";
 
@@ -183,7 +194,10 @@ namespace DDLCScreenReaderMod
             try
             {
                 string settingName = PreferenceTypeNames.GetFriendlyName(__instance.PreferenceType);
-                string currentValue = PreferenceTypeNames.FormatSliderValue(__instance.Value, __instance.PreferenceType);
+                string currentValue = PreferenceTypeNames.FormatSliderValue(
+                    __instance.Value,
+                    __instance.PreferenceType
+                );
                 string announcement = $"{settingName}, {currentValue}";
 
                 ScreenReaderMod.Logger?.Msg($"Slider focused: {announcement}");
@@ -199,14 +213,20 @@ namespace DDLCScreenReaderMod
 
         [HarmonyPatch(typeof(RenpySliderUI), "SliderValueChanged")]
         [HarmonyPostfix]
-        public static void RenpySliderUI_SliderValueChanged_Postfix(RenpySliderUI __instance, UnityEngine.UI.Slider s)
+        public static void RenpySliderUI_SliderValueChanged_Postfix(
+            RenpySliderUI __instance,
+            UnityEngine.UI.Slider s
+        )
         {
             try
             {
                 if (!s.interactable)
                     return;
 
-                string newValue = PreferenceTypeNames.FormatSliderValue(s.value, __instance.PreferenceType);
+                string newValue = PreferenceTypeNames.FormatSliderValue(
+                    s.value,
+                    __instance.PreferenceType
+                );
 
                 ScreenReaderMod.Logger?.Msg($"Slider value changed: {newValue}");
                 ClipboardUtils.OutputGameText("", newValue, TextType.Settings);
@@ -219,10 +239,12 @@ namespace DDLCScreenReaderMod
             }
         }
 
-
         [HarmonyPatch(typeof(RenpyToggleButtonUI), "OnValueChanged")]
         [HarmonyPostfix]
-        public static void RenpyToggleButtonUI_OnValueChanged_Postfix(RenpyToggleButtonUI __instance, bool newValue)
+        public static void RenpyToggleButtonUI_OnValueChanged_Postfix(
+            RenpyToggleButtonUI __instance,
+            bool newValue
+        )
         {
             try
             {
