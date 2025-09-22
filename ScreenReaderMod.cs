@@ -21,7 +21,8 @@ namespace DDLCScreenReaderMod
 
         private void InitializeClipboardSystem()
         {
-            if (_isInitialized) return;
+            if (_isInitialized)
+                return;
 
             try
             {
@@ -29,7 +30,9 @@ namespace DDLCScreenReaderMod
                 managerObject.AddComponent<CoroutineManager>();
 
                 Logger.Msg("Clipboard utility initialized successfully");
-                Logger.Msg("Using default settings - All text types enabled, Speaker names included");
+                Logger.Msg(
+                    "Using default settings - All text types enabled, Speaker names included"
+                );
                 _isInitialized = true;
             }
             catch (Exception ex)
@@ -60,10 +63,51 @@ namespace DDLCScreenReaderMod
                 {
                     ClipboardUtils.RepeatCurrentDialogue();
                 }
+
+                if (Input.GetKeyDown(KeyCode.C))
+                {
+                    AnnounceDataCollectionPercentage();
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error($"Error in OnUpdate: {ex.Message}");
+            }
+        }
+
+        private void AnnounceDataCollectionPercentage()
+        {
+            try
+            {
+                if (UnlockSystem.Instance != null)
+                {
+                    float percentage = UnlockSystem.Instance.UnlockedPercentage;
+                    int roundedPercentage = Mathf.RoundToInt(percentage);
+                    string message = $"Data collected: {roundedPercentage} percent";
+
+                    Logger?.Msg($"Data collection percentage requested: {message}");
+                    ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
+                }
+                else
+                {
+                    Logger?.Warning(
+                        "UnlockSystem.Instance is null - cannot retrieve data collection percentage"
+                    );
+                    ClipboardUtils.OutputGameText(
+                        "",
+                        "Data collection percentage unavailable",
+                        TextType.SystemMessage
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error($"Error announcing data collection percentage: {ex.Message}");
+                ClipboardUtils.OutputGameText(
+                    "",
+                    "Error retrieving data collection percentage",
+                    TextType.SystemMessage
+                );
             }
         }
 
