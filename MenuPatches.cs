@@ -124,19 +124,19 @@ namespace DDLCScreenReaderMod
             }
         }
 
-        [HarmonyPatch(typeof(RenpyNameInputScreenUI), "OnShow")]
+        [HarmonyPatch(typeof(RenpyNameInputScreenUI), "SetData")]
         [HarmonyPostfix]
-        public static void RenpyNameInputScreenUI_OnShow_Postfix(RenpyNameInputScreenUI __instance)
+        public static void RenpyNameInputScreenUI_SetData_Postfix(RenpyNameInputScreenUI __instance, string messageStr)
         {
             try
             {
-                ScreenReaderMod.Logger?.Msg("Name input screen shown");
-                ClipboardUtils.OutputGameText("", "Name input screen", TextType.SystemMessage);
+                ScreenReaderMod.Logger?.Msg($"Name input screen shown with message: {messageStr}");
+                ClipboardUtils.OutputGameText("", messageStr, TextType.SystemMessage);
             }
             catch (System.Exception ex)
             {
                 ScreenReaderMod.Logger?.Error(
-                    $"Error in RenpyNameInputScreenUI_OnShow_Postfix: {ex.Message}"
+                    $"Error in RenpyNameInputScreenUI_SetData_Postfix: {ex.Message}"
                 );
             }
         }
