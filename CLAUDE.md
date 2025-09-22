@@ -56,7 +56,7 @@ The mod uses Harmony to patch game methods and intercept text display across 8 p
 - Patches launcher button selection and side story navigation
 - Converts internal story codes to user-friendly names
 - Manages confirmation dialog accessibility
-- Monitors BIOS and boot sequence text announcements
+- Monitors BIOS, boot sequence, and reset sequence text announcements
 
 **FileBrowserPatches.cs** - File browser accessibility
 

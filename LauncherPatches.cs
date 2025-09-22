@@ -270,7 +270,78 @@ namespace DDLCScreenReaderMod
                     );
                 }
 
-                yield return new UnityEngine.WaitForSeconds(0.1f); // Check every 100ms
+                yield return new UnityEngine.WaitForSeconds(0.01f);
+            }
+        }
+
+        // Patch VMApp to announce reset sequence text
+        [HarmonyPatch(typeof(VMApp), "Sequence")]
+        [HarmonyPostfix]
+        public static void VMApp_Sequence_Postfix(VMApp __instance)
+        {
+            try
+            {
+                // Start monitoring the reset sequence text changes
+                __instance.StartCoroutine(MonitorVMSequenceText(__instance));
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error($"Error in VMApp_Sequence_Postfix: {ex.Message}");
+            }
+        }
+
+        private static IEnumerator MonitorVMSequenceText(VMApp vmApp)
+        {
+            string lastText = "";
+
+            while (vmApp != null && vmApp.gameObject.activeInHierarchy)
+            {
+                try
+                {
+                    if (vmApp.label != null && !string.IsNullOrWhiteSpace(vmApp.label.text))
+                    {
+                        string currentText = vmApp.label.text.Trim();
+
+                        if (currentText != lastText && !string.IsNullOrEmpty(currentText))
+                        {
+                            // Only announce new lines, not empty text or repeated text
+                            string[] lines = currentText.Split('\n');
+                            string[] lastLines = lastText.Split('\n');
+
+                            // Find new lines that weren't in the previous text
+                            for (int i = lastLines.Length; i < lines.Length; i++)
+                            {
+                                string line = lines[i].Trim();
+                                if (!string.IsNullOrEmpty(line))
+                                {
+                                    // Filter out the cursor character (█) for screen readers
+                                    string cleanLine = line.Replace("█", "").Trim();
+                                    if (!string.IsNullOrEmpty(cleanLine))
+                                    {
+                                        ScreenReaderMod.Logger?.Msg(
+                                            $"Reset sequence line: {cleanLine}"
+                                        );
+                                        ClipboardUtils.OutputGameText(
+                                            "",
+                                            cleanLine,
+                                            TextType.SystemMessage
+                                        );
+                                    }
+                                }
+                            }
+
+                            lastText = currentText;
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    ScreenReaderMod.Logger?.Error(
+                        $"Error monitoring reset sequence text: {ex.Message}"
+                    );
+                }
+
+                yield return new UnityEngine.WaitForSeconds(0.01f);
             }
         }
     }
