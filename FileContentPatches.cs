@@ -17,7 +17,6 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-
                 // Extract file content
                 string fileName = GetFileNameFromPath(FileBrowserApp.ViewedPath);
                 string fileContent = ExtractFileContent();

@@ -2,6 +2,7 @@ using System.Reflection;
 using HarmonyLib;
 using RenpyParser;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DDLCScreenReaderMod
@@ -221,6 +222,13 @@ namespace DDLCScreenReaderMod
             try
             {
                 if (!s.interactable)
+                    return;
+
+                // Only announce slider value changes when the slider is actually focused/selected
+                if (
+                    EventSystem.current != null
+                    && EventSystem.current.currentSelectedGameObject != s.gameObject
+                )
                     return;
 
                 string newValue = PreferenceTypeNames.FormatSliderValue(

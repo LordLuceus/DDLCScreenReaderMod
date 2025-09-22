@@ -1,30 +1,32 @@
-using RenpyParser;
 using System.Collections.Generic;
+using RenpyParser;
 
 namespace DDLCScreenReaderMod
 {
     public static class PreferenceTypeNames
     {
-        private static readonly Dictionary<PreferenceType, string> PreferenceNames =
-            new Dictionary<PreferenceType, string>
-            {
-                { PreferenceType.TextSpeed, "Text speed" },
-                { PreferenceType.AutoForwardTime, "Auto forward time" },
-                { PreferenceType.MusicVolume, "Music volume" },
-                { PreferenceType.SoundVolume, "Sound volume" },
-                { PreferenceType.DeveloperCommentary, "Developer commentary" },
-                { PreferenceType.SkipUnseenText, "Skip unseen text" },
-                { PreferenceType.SkipAfterChoices, "Skip after choices" },
-                { PreferenceType.Window, "Window mode" },
-                { PreferenceType.Fullscreen, "Fullscreen" },
-                { PreferenceType.MuteAll, "Mute all" },
-                { PreferenceType.DeveloperCommentaryVolume, "Developer commentary volume" },
-                { PreferenceType.DeveloperCommentaryAutoplayAudio, "Developer commentary autoplay" },
-                { PreferenceType.EnableContentWarnings, "Content warnings" },
-                { PreferenceType.Language, "Language" },
-                { PreferenceType.VSync, "VSync" },
-                { PreferenceType.DialogueBoxSize, "Dialogue box size" }
-            };
+        private static readonly Dictionary<PreferenceType, string> PreferenceNames = new Dictionary<
+            PreferenceType,
+            string
+        >
+        {
+            { PreferenceType.TextSpeed, "Text speed" },
+            { PreferenceType.AutoForwardTime, "Auto forward time" },
+            { PreferenceType.MusicVolume, "Music volume" },
+            { PreferenceType.SoundVolume, "Sound volume" },
+            { PreferenceType.DeveloperCommentary, "Developer commentary" },
+            { PreferenceType.SkipUnseenText, "Skip unseen text" },
+            { PreferenceType.SkipAfterChoices, "Skip after choices" },
+            { PreferenceType.Window, "Window mode" },
+            { PreferenceType.Fullscreen, "Fullscreen" },
+            { PreferenceType.MuteAll, "Mute all" },
+            { PreferenceType.DeveloperCommentaryVolume, "Developer commentary volume" },
+            { PreferenceType.DeveloperCommentaryAutoplayAudio, "Developer commentary autoplay" },
+            { PreferenceType.EnableContentWarnings, "Content warnings" },
+            { PreferenceType.Language, "Language" },
+            { PreferenceType.VSync, "VSync" },
+            { PreferenceType.DialogueBoxSize, "Dialogue box size" },
+        };
 
         public static string GetFriendlyName(PreferenceType preferenceType)
         {

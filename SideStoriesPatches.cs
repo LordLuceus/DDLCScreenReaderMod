@@ -14,9 +14,14 @@ namespace DDLCScreenReaderMod
         {
             try
             {
-                if (__instance?.sideStoreText != null && !string.IsNullOrWhiteSpace(__instance.sideStoreText.text))
+                if (
+                    __instance?.sideStoreText != null
+                    && !string.IsNullOrWhiteSpace(__instance.sideStoreText.text)
+                )
                 {
-                    ScreenReaderMod.Logger?.Msg($"Side stories menu text: {__instance.sideStoreText.text}");
+                    ScreenReaderMod.Logger?.Msg(
+                        $"Side stories menu text: {__instance.sideStoreText.text}"
+                    );
                     ClipboardUtils.OutputGameText("", __instance.sideStoreText.text, TextType.Menu);
                 }
             }

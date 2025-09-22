@@ -80,11 +80,6 @@ namespace DDLCScreenReaderMod
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
 
-        private static readonly Regex MultipleWhitespaceRegex = new Regex(
-            @"\s+",
-            RegexOptions.Compiled
-        );
-
         public static string CleanText(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -111,8 +106,6 @@ namespace DDLCScreenReaderMod
             cleaned = HtmlItalicTagRegex.Replace(cleaned, "");
             cleaned = HtmlBoldTagRegex.Replace(cleaned, "");
             cleaned = HtmlUnderlineTagRegex.Replace(cleaned, "");
-
-            cleaned = MultipleWhitespaceRegex.Replace(cleaned.Trim(), " ");
 
             cleaned = UnescapeSpecialCharacters(cleaned);
 
