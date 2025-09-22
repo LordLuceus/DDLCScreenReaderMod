@@ -172,10 +172,9 @@ namespace DDLCScreenReaderMod
                 // Format file information
                 var parts = new List<string>();
 
+                parts.Add(fileName);
                 if (!string.IsNullOrWhiteSpace(fileType))
                     parts.Add(fileType);
-
-                parts.Add(fileName);
 
                 if (!string.IsNullOrWhiteSpace(fileSize) && fileSize != "--")
                     parts.Add($"Size: {fileSize}");
