@@ -130,5 +130,6 @@ namespace DDLCScreenReaderMod
         FileBrowser,
         Poem,
         Settings,
+        Mail,
     }
 }
