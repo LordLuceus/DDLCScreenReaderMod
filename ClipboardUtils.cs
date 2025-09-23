@@ -131,5 +131,6 @@ namespace DDLCScreenReaderMod
         Poem,
         Settings,
         Mail,
+        Jukebox,
     }
 }

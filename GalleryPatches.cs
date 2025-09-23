@@ -59,24 +59,27 @@ namespace DDLCScreenReaderMod
                 parts.Add($"Unlock condition: {entry.UnlockCondition}");
             }
 
-            // Add wallpaper status
-            var isCurrentWallpaperField = AccessTools.Field(
-                typeof(GalleryApp),
-                "m_IsCurrentWallpaper"
-            );
-            if (isCurrentWallpaperField != null && galleryInstance != null)
+            // Add wallpaper status by checking directly with the launcher
+            if (entry.ImageRef != null)
             {
-                bool isCurrentWallpaper = (bool)isCurrentWallpaperField.GetValue(galleryInstance);
+                bool isCurrentWallpaper = Renpy.LauncherMain.IsCurrentWallpaper(
+                    entry.ImageRef.AssetName,
+                    entry.ImageRef.AssetBundleName
+                );
                 if (isCurrentWallpaper)
                 {
-                    parts.Add(" Currently set as wallpaper");
+                    parts.Add("Currently set as wallpaper");
                 }
             }
 
-            string fullDescription = GalleryImageDescriptions.GetDescription(entryName);
-            if (!string.IsNullOrEmpty(fullDescription))
+            // Check if full description is available (only for preview mode, indicated by "Viewing" prefix)
+            if (prefix == "Viewing")
             {
-                parts.Add("Press enter to read full image description");
+                string fullDescription = GalleryImageDescriptions.GetDescription(entryName);
+                if (!string.IsNullOrEmpty(fullDescription))
+                {
+                    parts.Add("Press enter to read full image description");
+                }
             }
 
             // Combine all parts into a single message. Join with ". " or only " " if already ends with punctuation. Add prefix if provided.
