@@ -71,7 +71,7 @@ namespace DDLCScreenReaderMod
                     ClipboardUtils.RepeatCurrentDialogue();
                 }
 
-                if (Input.GetKeyDown(KeyCode.C))
+                if (Input.GetKeyDown(KeyCode.C) && IsInSettingsApp())
                 {
                     AnnounceDataCollectionPercentage();
                 }
@@ -115,6 +115,20 @@ namespace DDLCScreenReaderMod
                     "Error retrieving data collection percentage",
                     TextType.SystemMessage
                 );
+            }
+        }
+
+        private bool IsInSettingsApp()
+        {
+            try
+            {
+                var settingsApp = UnityEngine.Object.FindObjectOfType<RenpyLauncher.SettingsApp>();
+                return settingsApp != null && settingsApp.gameObject.activeInHierarchy;
+            }
+            catch (System.Exception ex)
+            {
+                Logger?.Error($"Error checking if in settings app: {ex.Message}");
+                return false;
             }
         }
 
