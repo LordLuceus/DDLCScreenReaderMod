@@ -33,6 +33,13 @@ namespace DDLCScreenReaderMod
                 Logger.Msg(
                     "Using default settings - All text types enabled, Speaker names included"
                 );
+
+                // Initialize special poem descriptions
+                SpecialPoemDescriptions.LoadDescriptions();
+                Logger.Msg(
+                    $"Special poem descriptions loaded: {SpecialPoemDescriptions.DescriptionCount} entries"
+                );
+
                 _isInitialized = true;
             }
             catch (Exception ex)
