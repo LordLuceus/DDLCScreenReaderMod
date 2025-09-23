@@ -31,6 +31,68 @@ namespace DDLCScreenReaderMod
         }
 
         /// <summary>
+        /// Build a comprehensive image description message including description, unlock condition, and wallpaper status
+        /// </summary>
+        private static string BuildImageMessage(
+            GalleryConfiguration.GalleryEntry entry,
+            GalleryApp galleryInstance,
+            string prefix = ""
+        )
+        {
+            if (entry == null)
+                return "Unknown image";
+
+            List<string> parts = new List<string>();
+
+            string entryName = entry.ImageRef?.AssetName ?? "Unknown image";
+            parts.Add(entryName);
+
+            // Add description if available
+            if (!string.IsNullOrEmpty(entry.Description))
+            {
+                parts.Add(entry.Description);
+            }
+
+            // Add unlock condition if available
+            if (!string.IsNullOrEmpty(entry.UnlockCondition))
+            {
+                parts.Add($"Unlock condition: {entry.UnlockCondition}");
+            }
+
+            // Add wallpaper status
+            var isCurrentWallpaperField = AccessTools.Field(
+                typeof(GalleryApp),
+                "m_IsCurrentWallpaper"
+            );
+            if (isCurrentWallpaperField != null && galleryInstance != null)
+            {
+                bool isCurrentWallpaper = (bool)isCurrentWallpaperField.GetValue(galleryInstance);
+                if (isCurrentWallpaper)
+                {
+                    parts.Add(" Currently set as wallpaper");
+                }
+            }
+
+            string fullDescription = GalleryImageDescriptions.GetDescription(entryName);
+            if (!string.IsNullOrEmpty(fullDescription))
+            {
+                parts.Add("Press enter to read full image description");
+            }
+
+            // Combine all parts into a single message. Join with ". " or only " " if already ends with punctuation. Add prefix if provided.
+            string message = string.Join(
+                " ",
+                parts.ConvertAll(part =>
+                    part.EndsWith(".") || part.EndsWith("!") || part.EndsWith("?")
+                        ? part
+                        : part + "."
+                )
+            );
+
+            return string.IsNullOrEmpty(prefix) ? message : $"{prefix} {message}";
+        }
+
+        /// <summary>
         /// Announce when the gallery app starts
         /// </summary>
         [HarmonyPatch(typeof(GalleryApp), "OnAppStart")]
@@ -277,43 +339,8 @@ namespace DDLCScreenReaderMod
                 if (entry == null)
                     return;
 
+                string message = BuildImageMessage(entry, __instance, "Viewing");
                 string entryName = entry.ImageRef?.AssetName ?? "Unknown image";
-                string description = "";
-
-                // Add description if available
-                if (!string.IsNullOrEmpty(entry.Description))
-                {
-                    description = $". {entry.Description}";
-                }
-
-                // Add unlock condition if available
-                if (!string.IsNullOrEmpty(entry.UnlockCondition))
-                {
-                    description += $". Unlock condition: {entry.UnlockCondition}";
-                }
-
-                // Add wallpaper status
-                var isCurrentWallpaperField = AccessTools.Field(
-                    typeof(GalleryApp),
-                    "m_IsCurrentWallpaper"
-                );
-                if (isCurrentWallpaperField != null)
-                {
-                    bool isCurrentWallpaper = (bool)isCurrentWallpaperField.GetValue(__instance);
-                    if (isCurrentWallpaper)
-                    {
-                        description += ". Currently set as wallpaper";
-                    }
-                }
-
-                // Check if full description is available
-                string fullDescription = GalleryImageDescriptions.GetDescription(entryName);
-                if (!string.IsNullOrEmpty(fullDescription))
-                {
-                    description += ". Press enter to read full image description";
-                }
-
-                string message = $"Viewing {entryName}{description}";
 
                 ScreenReaderMod.Logger?.Msg($"Gallery preview opened for: {entryName}");
                 ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
@@ -356,33 +383,7 @@ namespace DDLCScreenReaderMod
                     if (unlockedImages != null && currentIndex < unlockedImages.Count)
                     {
                         var currentEntry = unlockedImages[currentIndex];
-                        string entryName = currentEntry.ImageRef?.AssetName ?? "Unknown image";
-                        string description = "";
-
-                        // Add description if available
-                        if (!string.IsNullOrEmpty(currentEntry.Description))
-                        {
-                            description = $". {currentEntry.Description}";
-                        }
-
-                        // Add unlock condition if available
-                        if (!string.IsNullOrEmpty(currentEntry.UnlockCondition))
-                        {
-                            description += $". Unlock condition: {currentEntry.UnlockCondition}";
-                        }
-
-                        // Add wallpaper status
-                        if (isCurrentWallpaperField != null)
-                        {
-                            bool isCurrentWallpaper = (bool)
-                                isCurrentWallpaperField.GetValue(__instance);
-                            if (isCurrentWallpaper)
-                            {
-                                description += ". Currently set as wallpaper";
-                            }
-                        }
-
-                        string message = $"Next image: {entryName}{description}";
+                        string message = BuildImageMessage(currentEntry, __instance, "Next image:");
 
                         ScreenReaderMod.Logger?.Msg(
                             $"Gallery navigation: Next image {currentIndex + 1} of {unlockedImages.Count}"
@@ -433,33 +434,11 @@ namespace DDLCScreenReaderMod
                     )
                     {
                         var currentEntry = unlockedImages[currentIndex];
-                        string entryName = currentEntry.ImageRef?.AssetName ?? "Unknown image";
-                        string description = "";
-
-                        // Add description if available
-                        if (!string.IsNullOrEmpty(currentEntry.Description))
-                        {
-                            description = $". {currentEntry.Description}";
-                        }
-
-                        // Add unlock condition if available
-                        if (!string.IsNullOrEmpty(currentEntry.UnlockCondition))
-                        {
-                            description += $". Unlock condition: {currentEntry.UnlockCondition}";
-                        }
-
-                        // Add wallpaper status
-                        if (isCurrentWallpaperField != null)
-                        {
-                            bool isCurrentWallpaper = (bool)
-                                isCurrentWallpaperField.GetValue(__instance);
-                            if (isCurrentWallpaper)
-                            {
-                                description += ". Currently set as wallpaper";
-                            }
-                        }
-
-                        string message = $"Previous image: {entryName}{description}";
+                        string message = BuildImageMessage(
+                            currentEntry,
+                            __instance,
+                            "Previous image:"
+                        );
 
                         ScreenReaderMod.Logger?.Msg(
                             $"Gallery navigation: Previous image {currentIndex + 1} of {unlockedImages.Count}"
