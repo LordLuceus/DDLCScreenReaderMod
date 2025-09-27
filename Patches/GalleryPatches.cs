@@ -14,6 +14,9 @@ namespace DDLCScreenReaderMod
         private static readonly System.TimeSpan ThumbnailDuplicateWindow =
             System.TimeSpan.FromMilliseconds(1000);
 
+        // Track image navigation to prevent announcing when no actual navigation occurs
+        private static int lastImageIndex = -1;
+
         private static bool IsThumbnailDuplicate(string thumbnailKey)
         {
             var now = System.DateTime.Now;
@@ -72,17 +75,11 @@ namespace DDLCScreenReaderMod
                 }
             }
 
-            // Check if full description is available (only for preview mode, indicated by "Viewing" prefix)
-            if (prefix == "Viewing")
+            if (DescriptionManager.HasDescription(entryName))
             {
-                string fullDescription = GalleryImageDescriptions.GetDescription(entryName);
-                if (!string.IsNullOrEmpty(fullDescription))
-                {
-                    parts.Add("Press enter to read full image description");
-                }
+                parts.Add("Press enter to read full image description");
             }
 
-            // Combine all parts into a single message. Join with ". " or only " " if already ends with punctuation. Add prefix if provided.
             string message = string.Join(
                 " ",
                 parts.ConvertAll(part =>
@@ -156,9 +153,7 @@ namespace DDLCScreenReaderMod
                             string imageName = currentEntry.ImageRef?.AssetName ?? "Unknown image";
 
                             // Get full description if available
-                            string fullDescription = GalleryImageDescriptions.GetDescription(
-                                imageName
-                            );
+                            string fullDescription = DescriptionManager.GetDescription(imageName);
 
                             string fullscreenMessage;
                             if (!string.IsNullOrEmpty(fullDescription))
@@ -345,6 +340,16 @@ namespace DDLCScreenReaderMod
                 string message = BuildImageMessage(entry, __instance, "Viewing");
                 string entryName = entry.ImageRef?.AssetName ?? "Unknown image";
 
+                // Initialize image index tracking when entering preview mode
+                var currentIndexField = AccessTools.Field(
+                    typeof(GalleryApp),
+                    "m_CurrentImageIndex"
+                );
+                if (currentIndexField != null)
+                {
+                    lastImageIndex = (int)currentIndexField.GetValue(__instance);
+                }
+
                 ScreenReaderMod.Logger?.Msg($"Gallery preview opened for: {entryName}");
                 ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
             }
@@ -383,7 +388,12 @@ namespace DDLCScreenReaderMod
                         unlockedImagesField.GetValue(__instance)
                         as List<GalleryConfiguration.GalleryEntry>;
 
-                    if (unlockedImages != null && currentIndex < unlockedImages.Count)
+                    // Only announce if the index actually changed
+                    if (
+                        unlockedImages != null
+                        && currentIndex < unlockedImages.Count
+                        && currentIndex != lastImageIndex
+                    )
                     {
                         var currentEntry = unlockedImages[currentIndex];
                         string message = BuildImageMessage(currentEntry, __instance, "Next image:");
@@ -392,6 +402,9 @@ namespace DDLCScreenReaderMod
                             $"Gallery navigation: Next image {currentIndex + 1} of {unlockedImages.Count}"
                         );
                         ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
+
+                        // Update the tracked index
+                        lastImageIndex = currentIndex;
                     }
                 }
             }
@@ -430,10 +443,12 @@ namespace DDLCScreenReaderMod
                         unlockedImagesField.GetValue(__instance)
                         as List<GalleryConfiguration.GalleryEntry>;
 
+                    // Only announce if the index actually changed
                     if (
                         unlockedImages != null
                         && currentIndex >= 0
                         && currentIndex < unlockedImages.Count
+                        && currentIndex != lastImageIndex
                     )
                     {
                         var currentEntry = unlockedImages[currentIndex];
@@ -447,6 +462,9 @@ namespace DDLCScreenReaderMod
                             $"Gallery navigation: Previous image {currentIndex + 1} of {unlockedImages.Count}"
                         );
                         ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
+
+                        // Update the tracked index
+                        lastImageIndex = currentIndex;
                     }
                 }
             }

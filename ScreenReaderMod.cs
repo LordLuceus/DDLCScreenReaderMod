@@ -142,7 +142,14 @@ namespace DDLCScreenReaderMod
             try
             {
                 var jukeboxApp = UnityEngine.Object.FindObjectOfType<JukeboxApp>();
-                return jukeboxApp != null && jukeboxApp.gameObject.activeInHierarchy;
+                if (jukeboxApp == null)
+                    return false;
+
+                // Check if the jukebox app is actually open and active
+                // The Window component should be active when the app is open
+                return jukeboxApp.gameObject.activeInHierarchy
+                    && jukeboxApp.Window != null
+                    && jukeboxApp.Window.activeInHierarchy;
             }
             catch (System.Exception ex)
             {

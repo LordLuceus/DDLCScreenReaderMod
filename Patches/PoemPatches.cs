@@ -91,13 +91,13 @@ namespace DDLCScreenReaderMod
                     }
                 }
 
-                result += title + ".\n\n";
+                result += title + "\n\n";
             }
 
             // Add poem content
             if (!string.IsNullOrWhiteSpace(poem.text))
             {
-                string content = poem.text.Trim();
+                string content = poem.text;
 
                 // Handle localization for non-yuri_3 poems
                 if (!poem.yuri_3)
@@ -129,7 +129,7 @@ namespace DDLCScreenReaderMod
                 result += content;
             }
 
-            return result.Trim();
+            return result;
         }
 
         private static string CleanPoemText(string input)

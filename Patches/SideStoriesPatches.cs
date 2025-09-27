@@ -83,7 +83,7 @@ namespace DDLCScreenReaderMod
                         string baseTitle = GetActualStoryTitle(selected);
                         if (!string.IsNullOrWhiteSpace(baseTitle))
                         {
-                            return $"{baseTitle} Part 1";
+                            return baseTitle + (component.Button2 == null ? "" : " Part 1");
                         }
                         else
                         {
@@ -209,38 +209,6 @@ namespace DDLCScreenReaderMod
             // Convert renpy labels to friendly names with actual titles
             switch (renpyLabel?.ToLower())
             {
-                case "sayori_exclusive1":
-                case "se1":
-                    return "Trust"; // First Sayori story
-                case "sayori_exclusive2":
-                case "se2":
-                    return "Understanding"; // Second Sayori story
-                case "natsuki_exclusive1":
-                case "ne1":
-                    return "Respect"; // First Natsuki story
-                case "natsuki_exclusive2":
-                case "ne2":
-                    return "My Meadow"; // Second Natsuki story
-                case "yuri_exclusive1":
-                case "ye1":
-                    return "Self-Love"; // First Yuri story
-                case "yuri_exclusive2":
-                case "ye2":
-                    return "Balanced Breakfast"; // Second Yuri story
-                case "sm_exclusive":
-                    return "Thank You"; // Sayori & Monika
-                case "sy_exclusive":
-                    return "Sayori & Yuri";
-                case "sn_exclusive":
-                    return "Sayori & Natsuki";
-                case "nm_exclusive":
-                    return "Natsuki & Monika";
-                case "ny_exclusive":
-                    return "Natsuki & Yuri";
-                case "ym_exclusive":
-                    return "Yuri & Monika";
-                case "testvm":
-                    return "Test VM";
                 case "ny1":
                 case "ny4":
                     return "Self-Love";

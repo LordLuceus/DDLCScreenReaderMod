@@ -9,40 +9,6 @@ namespace DDLCScreenReaderMod
     [HarmonyPatch]
     public static class JukeboxPatches
     {
-        [HarmonyPatch(typeof(JukeboxApp), "OnWindowActive")]
-        [HarmonyPostfix]
-        public static void JukeboxApp_OnWindowActive_Postfix(JukeboxApp __instance)
-        {
-            try
-            {
-                ScreenReaderMod.Logger?.Msg("Jukebox app opened");
-                ClipboardUtils.OutputGameText("", "Jukebox opened", TextType.Jukebox);
-            }
-            catch (System.Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error(
-                    $"Error in JukeboxApp_OnWindowActive_Postfix: {ex.Message}"
-                );
-            }
-        }
-
-        [HarmonyPatch(typeof(JukeboxApp), "OnAppClose")]
-        [HarmonyPostfix]
-        public static void JukeboxApp_OnAppClose_Postfix(JukeboxApp __instance)
-        {
-            try
-            {
-                ScreenReaderMod.Logger?.Msg("Jukebox app closed");
-                ClipboardUtils.OutputGameText("", "Jukebox closed", TextType.Jukebox);
-            }
-            catch (System.Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error(
-                    $"Error in JukeboxApp_OnAppClose_Postfix: {ex.Message}"
-                );
-            }
-        }
-
         [HarmonyPatch(typeof(JukeboxApp), "ShowAllTracks")]
         [HarmonyPostfix]
         public static void JukeboxApp_ShowAllTracks_Postfix(JukeboxApp __instance)
