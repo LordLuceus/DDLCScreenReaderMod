@@ -114,7 +114,24 @@ namespace DDLCScreenReaderMod
                     message = characterReactions;
                 }
 
-                message += (message.Length > 0 ? ". " : "") + $"Progress: {currentProgress}/20";
+                // Check if this is the special Act 2 poem with the glitched counter
+                int playthrough = GetCurrentPlaythrough();
+                int chapter = (int)
+                    System.Math.Floor(Renpy.CurrentContext.GetVariableFloat("chapter"));
+
+                string progressDisplay;
+                if (playthrough == 2 && chapter == 2)
+                {
+                    // Act 2, third poem: display repeated 1s like the visual counter
+                    progressDisplay = new string('1', currentProgress);
+                }
+                else
+                {
+                    // Normal progress display
+                    progressDisplay = currentProgress.ToString();
+                }
+
+                message += (message.Length > 0 ? ". " : "") + $"Progress: {progressDisplay}/20";
 
                 ClipboardUtils.OutputGameText("", message, TextType.SystemMessage);
             }

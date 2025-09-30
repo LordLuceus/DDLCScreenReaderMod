@@ -24,19 +24,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Initializes all systems on mod startup
 - Handles scene loading events
 - Manages application lifecycle
-- Hardcoded repeat dialogue hotkey: R key
+- Implements hotkeys:
+  - **R key**: Repeat last dialogue
+  - **C key**: Announce data collection percentage (in Settings app)
+  - **P key**: Announce jukebox position (in Jukebox app)
 
 **ClipboardUtils.cs** - Windows clipboard integration system
 
 - Uses Unity's built-in APIs to output text to clipboard for screen readers
-- Implements rate limiting to prevent duplicate outputs
+- Implements rate limiting to prevent duplicate outputs (0.5 second window)
 - Formats text according to type (dialogue, menu, narrator, etc.)
 - All text types always enabled with no character limits
 - Speaker names always included in dialogue
+- Maintains queue of messages processed by CoroutineManager
+
+**CoroutineManager.cs** - Clipboard queue processor
+
+- Unity MonoBehaviour that processes clipboard message queue
+- Runs as singleton coroutine that persists across scenes
+- Processes messages at 0.025 second intervals
+- Prevents clipboard API blocking by queuing messages
+
+**DescriptionManager.cs** - Centralized image description system
+
+- Manages descriptions for all gallery image types
+- Registers description dictionaries from ImageDescriptions/ folder
+- Provides lookup methods for image descriptions by name or section
+- Supports sections: Poems, Wallpapers, Secrets, Backgrounds, Promos, CGs, Sketches
 
 ### Harmony Patching Architecture
 
-The mod uses Harmony to patch game methods and intercept text display across 8 patch files:
+The mod uses Harmony to patch game methods and intercept text display across multiple patch files:
 
 **DialoguePatches.cs** - Captures character dialogue and narrative text
 
@@ -50,6 +68,8 @@ The mod uses Harmony to patch game methods and intercept text display across 8 p
 - Patches choice menu display (`RenpyChoiceMenuUI`)
 - Patches various menu screens (main, preferences, history, save/load)
 - Handles button focus events for navigation announcements
+- Announces slider values and toggle states in settings menus
+- Uses `PreferenceTypeNames` to format setting values for screen readers
 
 **LauncherPatches.cs** - Handles DDLC Plus launcher accessibility
 
@@ -88,6 +108,41 @@ The mod uses Harmony to patch game methods and intercept text display across 8 p
 - Differentiates between story parts (Part 1, Part 2)
 - Provides readable names for character exclusive stories
 
+**GalleryPatches.cs** - Gallery navigation and image viewing
+
+- Announces gallery section names and image selection
+- Provides image descriptions from DescriptionManager
+- Handles locked/unlocked status announcements
+- Announces navigation within gallery sections
+
+**ImagePatches.cs** - Background and CG image announcements
+
+- Monitors scene background changes
+- Announces current wallpaper in virtual desktop
+- Provides context for visual changes during gameplay
+
+**JukeboxPatches.cs** - Music player accessibility
+
+- Announces track selection and playback state
+- Provides track information (title, artist, album)
+- Handles play/pause state changes
+
+**MailPatches.cs** - Email application accessibility
+
+- Announces email selection and content
+- Handles email list navigation
+- Provides sender and subject information
+
+**SelectorPatches.cs** - Generic selector UI accessibility
+
+- Handles arrow-based selection UI elements
+- Announces selected options in various game screens
+
+**TextPatches.cs** - Generic text UI monitoring
+
+- Catches text changes in various UI components
+- Provides fallback text capture for unmapped UI elements
+
 ### Text Processing System
 
 **TextProcessor.cs** - Cleans and processes game text
@@ -104,6 +159,17 @@ The mod uses Harmony to patch game methods and intercept text display across 8 p
 - Filters out unwanted text (developer commentary, missing localizations)
 - Provides centralized character name management
 
+**PreferenceTypeNames.cs** - Settings UI name formatting
+
+- Converts internal preference type enums to human-readable names
+- Formats slider values with appropriate units (percentage, etc.)
+- Formats toggle states as "On" or "Off"
+
+**SpecialPoemDescriptions.cs** - Special poem metadata
+
+- Contains descriptions for special poem variants
+- Loaded during mod initialization
+
 ### Text Output Types
 
 The mod categorizes all text into types defined in `ClipboardUtils.cs`:
@@ -116,6 +182,23 @@ The mod categorizes all text into types defined in `ClipboardUtils.cs`:
 - **PoetryGame**: Poetry minigame word selections and feedback
 - **FileBrowser**: File browser navigation and operations
 - **Poem**: Complete poem content with formatting
+- **Settings**: Settings menu options and values
+- **Mail**: Email application content
+- **Jukebox**: Music player information
+
+### Image Description System
+
+The mod includes comprehensive image descriptions stored in `ImageDescriptions/` folder:
+
+- **CGDescriptions.cs**: Character CG artwork descriptions
+- **WallpaperDescriptions.cs**: Desktop wallpaper descriptions
+- **PoemDescriptions.cs**: Poem background image descriptions
+- **BackgroundDescriptions.cs**: Scene background descriptions
+- **PromoDescriptions.cs**: Promotional artwork descriptions
+- **SecretDescriptions.cs**: Hidden/secret image descriptions
+- **SketchDescriptions.cs**: Character sketch descriptions
+
+All descriptions are managed centrally by `DescriptionManager.cs` for consistent access.
 
 ## Dependencies
 
@@ -139,9 +222,18 @@ The mod categorizes all text into types defined in `ClipboardUtils.cs`:
 ### Adding New Text Sources
 
 1. Identify the game method that displays the text
-2. Create appropriate Harmony patch in relevant Patches file
+2. Create appropriate Harmony patch in relevant Patches file (or add to existing patch file)
 3. Use `ClipboardUtils.OutputGameText()` with correct TextType
 4. Test across different game scenarios
+5. Ensure duplicate filtering works correctly if needed
+
+### Adding New Image Descriptions
+
+1. Identify the image asset name in the game
+2. Add description to appropriate file in `ImageDescriptions/` folder
+3. Description dictionary uses asset name as key
+4. Verify description appears when image is viewed in gallery
+5. Test with actual screen reader to ensure description is helpful
 
 ### Debugging
 
