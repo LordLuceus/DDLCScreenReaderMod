@@ -290,6 +290,14 @@ namespace DDLCScreenReaderMod
                 var entry = __instance.EntryInfo;
                 string imageName = entry.ImageRef?.AssetName ?? "Unknown image";
 
+                // Check if image is locked using reflection
+                var lockedField = AccessTools.Field(typeof(SceneThumbnail), "m_Locked");
+                bool isLocked = false;
+                if (lockedField != null)
+                {
+                    isLocked = (bool)lockedField.GetValue(__instance);
+                }
+
                 // Check for duplicates
                 if (IsThumbnailDuplicate(imageName))
                 {
@@ -309,9 +317,26 @@ namespace DDLCScreenReaderMod
                     positionInfo = $", position {__instance.elementIndex + 1}";
                 }
 
-                string message = $"Selected {imageName}{sectionInfo}{positionInfo}";
+                // Build message with locked status if applicable
+                string message;
+                if (isLocked)
+                {
+                    message = $"Selected {imageName}{sectionInfo}{positionInfo}. Locked";
 
-                ScreenReaderMod.Logger?.Msg($"Gallery thumbnail selected: {imageName}");
+                    // Add unlock condition if available
+                    if (!string.IsNullOrEmpty(entry.UnlockCondition))
+                    {
+                        message += $". {entry.UnlockCondition}";
+                    }
+                }
+                else
+                {
+                    message = $"Selected {imageName}{sectionInfo}{positionInfo}";
+                }
+
+                ScreenReaderMod.Logger?.Msg(
+                    $"Gallery thumbnail selected: {imageName} (Locked: {isLocked})"
+                );
                 ClipboardUtils.OutputGameText("", message, TextType.Menu);
             }
             catch (System.Exception ex)
