@@ -111,6 +111,10 @@ namespace DDLCScreenReaderMod
 
             cleaned = cleaned.Replace("<br>", "\n").Replace("<br/>", "\n").Replace("<br />", "\n");
             cleaned = cleaned.Replace("<color=#000>", "").Replace("</color>", "");
+            cleaned = cleaned.Replace(
+                @"<sprite name=""keyboard_enter"">Apply",
+                "Press Enter to Apply"
+            );
 
             return cleaned;
         }
