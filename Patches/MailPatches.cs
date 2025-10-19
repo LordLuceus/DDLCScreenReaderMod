@@ -40,30 +40,6 @@ namespace DDLCScreenReaderMod
             }
         }
 
-        // Patch mail item pointer hover for mouse navigation
-        [HarmonyPatch(typeof(MailItemComponent), "OnPointerEnter")]
-        [HarmonyPostfix]
-        public static void MailItemComponent_OnPointerEnter_Postfix(MailItemComponent __instance)
-        {
-            try
-            {
-                if (__instance != null && __instance.Mail != null)
-                {
-                    // Only announce on hover if it's a different item than last selected
-                    if (__instance != lastSelectedMailItem)
-                    {
-                        AnnounceMail(__instance, "hovered");
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error(
-                    $"Error in MailItemComponent_OnPointerEnter_Postfix: {ex.Message}"
-                );
-            }
-        }
-
         // Patch mail app start to announce initial state
         [HarmonyPatch(typeof(MailApp), "PerformAppStart")]
         [HarmonyPostfix]
