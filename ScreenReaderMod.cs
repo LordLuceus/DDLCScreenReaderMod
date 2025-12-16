@@ -16,20 +16,19 @@ namespace DDLCScreenReaderMod
             Instance = this;
             Logger = LoggerInstance;
             Logger.Msg("DDLC Screen Reader Mod initialized!");
-            Logger.Msg("Waiting for Unity to be ready before starting clipboard system...");
+            Logger.Msg("Waiting for Unity to be ready before starting speech system...");
         }
 
-        private void InitializeClipboardSystem()
+        private void InitializeSpeechSystem()
         {
             if (_isInitialized)
                 return;
 
             try
             {
-                GameObject managerObject = new GameObject("ScreenReaderMod_CoroutineManager");
-                managerObject.AddComponent<CoroutineManager>();
+                UniversalSpeechWrapper.Initialize();
 
-                Logger.Msg("Clipboard utility initialized successfully");
+                Logger.Msg("Speech system initialized successfully");
                 Logger.Msg(
                     "Using default settings - All text types enabled, Speaker names included"
                 );
@@ -44,7 +43,7 @@ namespace DDLCScreenReaderMod
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to initialize clipboard system: {ex.Message}");
+                Logger.Error($"Failed to initialize speech system: {ex.Message}");
             }
         }
 
@@ -52,10 +51,10 @@ namespace DDLCScreenReaderMod
         {
             Logger.Msg($"Scene loaded: {sceneName} (Index: {buildIndex})");
 
-            // Initialize clipboard system on first scene load (when Unity is ready)
-            InitializeClipboardSystem();
+            // Initialize speech system on first scene load (when Unity is ready)
+            InitializeSpeechSystem();
 
-            // Test clipboard functionality and announce scene changes
+            // Announce scene changes
             if (sceneName == "LauncherScene")
             {
                 ClipboardUtils.OutputGameText("", "DDLC Plus launcher", TextType.Menu);
@@ -228,12 +227,7 @@ namespace DDLCScreenReaderMod
 
         public override void OnDeinitializeMelon()
         {
-            if (CoroutineManager.Instance != null)
-            {
-                CoroutineManager.Instance.StopClipboardProcessor();
-                UnityEngine.Object.Destroy(CoroutineManager.Instance.gameObject);
-            }
-
+            UniversalSpeechWrapper.Stop();
             Logger.Msg("Screen Reader Mod deinitialized.");
         }
 

@@ -1,46 +1,35 @@
 using System;
-using System.Collections.Generic;
 
 namespace DDLCScreenReaderMod
 {
     public static class ClipboardUtils
     {
-        private static readonly Queue<string> MessageQueue = new Queue<string>();
-
         private static string _currentDialogueSpeaker = "";
         private static string _currentDialogueText = "";
         private static TextType _currentDialogueType = TextType.Dialogue;
 
-        private static string _lastEnqueuedMessage = "";
-        private static DateTime _lastEnqueueTime = DateTime.MinValue;
+        private static string _lastSpokenMessage = "";
+        private static DateTime _lastSpeakTime = DateTime.MinValue;
         private const double DuplicateWindowSeconds = 0.5;
 
-        public static string DequeueMessage()
-        {
-            if (MessageQueue.Count > 0)
-            {
-                return MessageQueue.Dequeue();
-            }
-            return null;
-        }
-
-        private static void EnqueueText(string text)
+        private static void SpeakText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
             DateTime now = DateTime.UtcNow;
             if (
-                text == _lastEnqueuedMessage
-                && (now - _lastEnqueueTime).TotalSeconds < DuplicateWindowSeconds
+                text == _lastSpokenMessage
+                && (now - _lastSpeakTime).TotalSeconds < DuplicateWindowSeconds
             )
             {
                 return;
             }
 
-            _lastEnqueuedMessage = text;
-            _lastEnqueueTime = now;
-            MessageQueue.Enqueue(text);
+            _lastSpokenMessage = text;
+            _lastSpeakTime = now;
+
+            UniversalSpeechWrapper.Speak(text, interrupt: false);
         }
 
         public static void RepeatCurrentDialogue()
@@ -52,8 +41,8 @@ namespace DDLCScreenReaderMod
                     _currentDialogueText,
                     _currentDialogueType
                 );
-                EnqueueText(formattedText);
-                ScreenReaderMod.Logger?.Msg($"Re-queued dialogue for repeat: '{formattedText}'");
+                SpeakText(formattedText);
+                ScreenReaderMod.Logger?.Msg($"Repeating dialogue: '{formattedText}'");
             }
             else
             {
@@ -78,10 +67,10 @@ namespace DDLCScreenReaderMod
                 _currentDialogueType = textType;
             }
 
-            EnqueueText(formattedText);
+            SpeakText(formattedText);
 
             ScreenReaderMod.Logger?.Msg(
-                $"[{textType}] Queued: '{formattedText}' (Speaker: '{speaker}')"
+                $"[{textType}] Speaking: '{formattedText}' (Speaker: '{speaker}')"
             );
         }
 
@@ -95,8 +84,8 @@ namespace DDLCScreenReaderMod
             _currentDialogueText = text;
             _currentDialogueType = TextType.Poem;
 
-            EnqueueText(formattedText);
-            ScreenReaderMod.Logger?.Msg($"[Poem] Queued: '{formattedText}'");
+            SpeakText(formattedText);
+            ScreenReaderMod.Logger?.Msg($"[Poem] Speaking: '{formattedText}'");
         }
 
         private static string FormatTextForScreenReader(
