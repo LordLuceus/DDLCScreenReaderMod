@@ -4,7 +4,7 @@ using MelonLoader;
 
 [assembly: AssemblyTitle("DDLC Screen Reader Accessibility Mod")]
 [assembly: AssemblyDescription(
-    "Provides screen reader accessibility for DDLC Plus by outputting game text to clipboard"
+    "Provides screen reader accessibility for DDLC Plus by outputting game text to screen readers"
 )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
@@ -20,7 +20,7 @@ using MelonLoader;
 [assembly: MelonInfo(
     typeof(DDLCScreenReaderMod.ScreenReaderMod),
     "DDLC Screen Reader Mod",
-    "1.0.0",
-    "Accessibility Team"
+    "1.1.0",
+    "LordLuceus"
 )]
 [assembly: MelonGame("Team Salvato", "Doki Doki Literature Club Plus")]
