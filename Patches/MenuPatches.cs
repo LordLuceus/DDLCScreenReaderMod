@@ -70,23 +70,6 @@ namespace DDLCScreenReaderMod
             }
         }
 
-        [HarmonyPatch(typeof(RenpyHistoryMenuUI), "OnShow")]
-        [HarmonyPostfix]
-        public static void RenpyHistoryMenuUI_OnShow_Postfix(RenpyHistoryMenuUI __instance)
-        {
-            try
-            {
-                ScreenReaderMod.Logger?.Msg("History menu shown");
-                ClipboardUtils.OutputGameText("", "History", TextType.Menu);
-            }
-            catch (System.Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error(
-                    $"Error in RenpyHistoryMenuUI_OnShow_Postfix: {ex.Message}"
-                );
-            }
-        }
-
         [HarmonyPatch(typeof(RenpySaveLoadScreen), "OnShow")]
         [HarmonyPostfix]
         public static void RenpySaveLoadScreen_OnShow_Postfix(RenpySaveLoadScreen __instance)

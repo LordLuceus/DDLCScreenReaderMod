@@ -140,6 +140,19 @@ namespace DDLCScreenReaderMod
                 {
                     AnnounceJukeboxPosition();
                 }
+
+                // History screen navigation
+                if (HistoryPatches.IsHistoryScreenActive)
+                {
+                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                    {
+                        HistoryPatches.NavigateToPrevious();
+                    }
+                    else if (Input.GetKeyDown(KeyCode.DownArrow))
+                    {
+                        HistoryPatches.NavigateToNext();
+                    }
+                }
             }
             catch (Exception ex)
             {

@@ -1,39 +1,99 @@
-using System.Collections.Generic;
 using DDLC;
 
 namespace DDLCScreenReaderMod
 {
     public static class SpeakerMapping
     {
-        private static readonly Dictionary<string, string> CharacterMap = new Dictionary<
-            string,
-            string
-        >
+        /// <summary>
+        /// Gets the localized speaker name as displayed by the game.
+        /// This matches what the game shows (e.g., "???" or "Girl 1" at the start).
+        /// </summary>
+        /// <param name="tag">The speaker tag/code (e.g., "s", "m", "mc")</param>
+        /// <param name="character">Optional character parameter from RenpyWindowManager.Say.
+        /// When provided, uses the game's exact localization logic.</param>
+        public static string GetLocalizedSpeakerName(string tag, string character = null)
         {
-            { "s", "Sayori" },
-            { "n", "Natsuki" },
-            { "y", "Yuri" },
-            { "m", "Monika" },
-            { "ny", "Natsuki and Yuri" },
-            { "dc", "" }, // Developer Commentary - filter out
-            { "", "" }, // Narrator/empty
-        };
-
-        public static string GetSpeakerName(string code)
-        {
-            if (string.IsNullOrWhiteSpace(code))
+            if (string.IsNullOrWhiteSpace(tag))
                 return "";
 
-            // Handle MC specially to use player's chosen name
-            if (code.ToLower() == "mc")
+            try
             {
-                return GetPlayerName();
-            }
+                // Handle MC specially to use player's chosen name
+                if (tag.ToLower() == "mc")
+                {
+                    return GetPlayerName();
+                }
 
-            return CharacterMap.TryGetValue(code.ToLower(), out string name) ? name : code;
+                // Check if it's the player variable - use raw name
+                string playerVar = Renpy.CurrentContext?.GetVariableString("player") ?? "";
+                if (tag == playerVar)
+                    return tag;
+
+                // When character parameter is provided, use the game's exact logic
+                // See RenpyWindowManager.Say lines 904-923
+                if (character != null)
+                {
+                    if (!string.IsNullOrEmpty(character))
+                    {
+                        // Capitalize first letter: "s" -> "S"
+                        string capitalizedTag = char.ToUpper(tag[0]) + tag.Substring(1);
+                        string localized = Renpy.Text.GetLocalisedString(capitalizedTag);
+                        if (localized != "MISSING!" && localized != "!MISSING")
+                        {
+                            return localized;
+                        }
+                        // Fall back to capitalized tag
+                        return capitalizedTag;
+                    }
+                    else
+                    {
+                        // Character is empty string - try to localize tag directly
+                        string localized = Renpy.Text.GetLocalisedString(tag);
+                        if (localized != "MISSING!" && localized != "!MISSING")
+                        {
+                            return localized;
+                        }
+                        return tag;
+                    }
+                }
+
+                // Fallback logic for when character parameter is not available (e.g., history)
+                // Try capitalized version first
+                string capitalizedCode = char.ToUpper(tag[0]) + tag.Substring(1);
+                string localizedName = Renpy.Text.GetLocalisedString(capitalizedCode);
+                if (
+                    !string.IsNullOrEmpty(localizedName)
+                    && localizedName != "MISSING!"
+                    && localizedName != "!MISSING"
+                )
+                {
+                    return localizedName;
+                }
+
+                // Try without capitalization
+                localizedName = Renpy.Text.GetLocalisedString(tag);
+                if (
+                    !string.IsNullOrEmpty(localizedName)
+                    && localizedName != "MISSING!"
+                    && localizedName != "!MISSING"
+                )
+                {
+                    return localizedName;
+                }
+
+                // Last resort: return the tag as-is
+                return tag;
+            }
+            catch (System.Exception ex)
+            {
+                ScreenReaderMod.Logger?.Warning(
+                    $"Error getting localized speaker name: {ex.Message}"
+                );
+                return tag;
+            }
         }
 
-        private static string GetPlayerName()
+        public static string GetPlayerName()
         {
             try
             {

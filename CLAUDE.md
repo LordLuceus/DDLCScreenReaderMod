@@ -28,6 +28,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - **R key**: Repeat last dialogue (`SpeechManager.RepeatLast()`)
   - **C key**: Announce data collection percentage (in Settings app)
   - **P key**: Announce jukebox position (in Jukebox app)
+  - **Up/Down arrows**: Navigate history entries (when history screen has focus)
 
 **ClipboardUtils.cs** - Thin wrapper around MelonAccessibilityLib's SpeechManager
 
@@ -49,6 +50,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `CleanText()` - Wraps `TextCleaner.Clean()`
 - `IsNarrativeText()` - Determines if text is narrative (no speaker)
 
+**SpeakerMapping.cs** - Speaker name resolution
+
+- `GetLocalizedSpeakerName(tag, character)` - Gets localized speaker name using game's localization system
+- Replicates game's exact logic from `RenpyWindowManager.Say` for accurate speaker names
+- Handles player name (MC) via `GetPlayerName()`
+- `ShouldFilterText()` - Filters developer commentary and technical strings
+
 **DescriptionManager.cs** - Centralized image description system
 
 - Manages descriptions for gallery images (CGs, Wallpapers, Poems, Backgrounds, etc.)
@@ -60,7 +68,8 @@ The mod uses Harmony to patch game methods. All patches output text via `Clipboa
 
 | Patch File | Purpose |
 |------------|---------|
-| `DialoguePatches.cs` | Character dialogue and narrative text |
+| `DialoguePatches.cs` | Character dialogue via `RenpyWindowManager.Say` patch |
+| `HistoryPatches.cs` | History screen navigation with Up/Down arrow keys |
 | `MenuPatches.cs` | Menu navigation, choices, settings |
 | `LauncherPatches.cs` | DDLC Plus launcher accessibility |
 | `FileBrowserPatches.cs` | File browser navigation |
