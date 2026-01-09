@@ -177,9 +177,7 @@ namespace DDLCScreenReaderMod
                     TextType textType = !string.IsNullOrWhiteSpace(speakerName)
                         ? TextType.Dialogue
                         : (
-                            TextProcessor.IsNarrativeText(text)
-                                ? TextType.Narrator
-                                : TextType.Dialogue
+                            TextHelper.IsNarrativeText(text) ? TextType.Narrator : TextType.Dialogue
                         );
                     ClipboardUtils.OutputGameText(speakerName, text, textType);
                 }
@@ -230,7 +228,7 @@ namespace DDLCScreenReaderMod
                     TextType textType = !string.IsNullOrWhiteSpace(speakerName)
                         ? TextType.Dialogue
                         : (
-                            TextProcessor.IsNarrativeText(value)
+                            TextHelper.IsNarrativeText(value)
                                 ? TextType.Narrator
                                 : TextType.Dialogue
                         );

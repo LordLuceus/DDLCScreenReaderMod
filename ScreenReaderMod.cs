@@ -1,5 +1,7 @@
 using System;
+using System.Text.RegularExpressions;
 using HarmonyLib;
+using MelonAccessibilityLib;
 using MelonLoader;
 using UnityEngine;
 
@@ -26,12 +28,30 @@ namespace DDLCScreenReaderMod
 
             try
             {
-                UniversalSpeechWrapper.Initialize();
+                // Set up accessibility library logging
+                AccessibilityLog.Logger = new MelonLoggerAdapter(LoggerInstance);
 
-                Logger.Msg("Speech system initialized successfully");
-                Logger.Msg(
-                    "Using default settings - All text types enabled, Speaker names included"
-                );
+                // Configure text type names for logging
+                SpeechManager.TextTypeNames = GameTextType.GetTextTypeNames();
+
+                // Configure which text types should be stored for repeat
+                SpeechManager.ShouldStoreForRepeatPredicate = GameTextType.ShouldStoreForRepeat;
+
+                // Register Ren'Py/TMP-specific text cleaning patterns
+                RegisterTextCleanerPatterns();
+
+                // Initialize the speech system
+                if (SpeechManager.Initialize())
+                {
+                    Logger.Msg("Speech system initialized successfully");
+                    Logger.Msg(
+                        "Using default settings - All text types enabled, Speaker names included"
+                    );
+                }
+                else
+                {
+                    Logger.Warning("Speech system initialization returned false");
+                }
 
                 // Initialize special poem descriptions
                 SpecialPoemDescriptions.LoadDescriptions();
@@ -45,6 +65,47 @@ namespace DDLCScreenReaderMod
             {
                 Logger.Error($"Failed to initialize speech system: {ex.Message}");
             }
+        }
+
+        private void RegisterTextCleanerPatterns()
+        {
+            // Ren'Py curly brace tags: {w}, {nw}, {clear}, {fast}, {cps=...}, etc.
+            TextCleaner.AddRegexReplacement(@"\{[^}]*\}", "");
+
+            // TMP square bracket tags
+            TextCleaner.AddRegexReplacement(
+                @"\[color=[^\]]*\]|\[/color\]",
+                "",
+                RegexOptions.IgnoreCase
+            );
+            TextCleaner.AddRegexReplacement(
+                @"\[size=[^\]]*\]|\[/size\]",
+                "",
+                RegexOptions.IgnoreCase
+            );
+            TextCleaner.AddRegexReplacement(@"\[b\]|\[/b\]", "", RegexOptions.IgnoreCase);
+            TextCleaner.AddRegexReplacement(@"\[i\]|\[/i\]", "", RegexOptions.IgnoreCase);
+            TextCleaner.AddRegexReplacement(@"\[u\]|\[/u\]", "", RegexOptions.IgnoreCase);
+            TextCleaner.AddRegexReplacement(@"\[s\]|\[/s\]", "", RegexOptions.IgnoreCase);
+            TextCleaner.AddRegexReplacement(@"\[center\]|\[/center\]", "", RegexOptions.IgnoreCase);
+            TextCleaner.AddRegexReplacement(@"\[right\]|\[/right\]", "", RegexOptions.IgnoreCase);
+            TextCleaner.AddRegexReplacement(@"\[left\]|\[/left\]", "", RegexOptions.IgnoreCase);
+            TextCleaner.AddRegexReplacement(
+                @"\[font=[^\]]*\]|\[/font\]",
+                "",
+                RegexOptions.IgnoreCase
+            );
+            TextCleaner.AddRegexReplacement(
+                @"\[alpha=[^\]]*\]|\[/alpha\]",
+                "",
+                RegexOptions.IgnoreCase
+            );
+
+            // Special replacements
+            TextCleaner.AddReplacement(
+                @"<sprite name=""keyboard_enter"">Apply",
+                "Press Enter to Apply"
+            );
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
@@ -227,7 +288,7 @@ namespace DDLCScreenReaderMod
 
         public override void OnDeinitializeMelon()
         {
-            UniversalSpeechWrapper.Stop();
+            SpeechManager.Stop();
             Logger.Msg("Screen Reader Mod deinitialized.");
         }
 

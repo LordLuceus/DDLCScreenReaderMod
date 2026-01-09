@@ -1,125 +1,59 @@
-using System;
+using MelonAccessibilityLib;
 
 namespace DDLCScreenReaderMod
 {
+    /// <summary>
+    /// Wrapper around MelonAccessibilityLib's SpeechManager that maintains API compatibility
+    /// with existing patch files.
+    /// </summary>
     public static class ClipboardUtils
     {
-        private static string _currentDialogueSpeaker = "";
-        private static string _currentDialogueText = "";
-        private static TextType _currentDialogueType = TextType.Dialogue;
-
-        private static string _lastSpokenMessage = "";
-        private static DateTime _lastSpeakTime = DateTime.MinValue;
-        private const double DuplicateWindowSeconds = 0.5;
-
-        private static void SpeakText(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return;
-
-            DateTime now = DateTime.UtcNow;
-            if (
-                text == _lastSpokenMessage
-                && (now - _lastSpeakTime).TotalSeconds < DuplicateWindowSeconds
-            )
-            {
-                return;
-            }
-
-            _lastSpokenMessage = text;
-            _lastSpeakTime = now;
-
-            UniversalSpeechWrapper.Speak(text, interrupt: false);
-        }
-
+        /// <summary>
+        /// Repeats the last dialogue or narrator text using SpeechManager.
+        /// </summary>
         public static void RepeatCurrentDialogue()
         {
-            if (!string.IsNullOrWhiteSpace(_currentDialogueText))
-            {
-                string formattedText = FormatTextForScreenReader(
-                    _currentDialogueSpeaker,
-                    _currentDialogueText,
-                    _currentDialogueType
-                );
-                SpeakText(formattedText);
-                ScreenReaderMod.Logger?.Msg($"Repeating dialogue: '{formattedText}'");
-            }
-            else
-            {
-                ScreenReaderMod.Logger?.Msg("No dialogue available to repeat");
-            }
+            SpeechManager.RepeatLast();
         }
 
+        /// <summary>
+        /// Outputs game text to the screen reader.
+        /// </summary>
+        /// <param name="speaker">The speaker name (for dialogue).</param>
+        /// <param name="text">The text to speak.</param>
+        /// <param name="textType">The type of text being spoken.</param>
         public static void OutputGameText(
             string speaker,
             string text,
             TextType textType = TextType.Dialogue
         )
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrEmpty(text))
                 return;
-            string formattedText = FormatTextForScreenReader(speaker, text, textType);
 
-            if (textType == TextType.Dialogue || textType == TextType.Narrator)
+            int mappedType = GameTextType.FromLegacyTextType(textType);
+
+            // For dialogue type, use Output with speaker; otherwise use Announce
+            if (textType == TextType.Dialogue && !string.IsNullOrEmpty(speaker))
             {
-                _currentDialogueSpeaker = speaker ?? "";
-                _currentDialogueText = text;
-                _currentDialogueType = textType;
+                SpeechManager.Output(speaker, text, mappedType);
             }
-
-            SpeakText(formattedText);
-
-            ScreenReaderMod.Logger?.Msg(
-                $"[{textType}] Speaking: '{formattedText}' (Speaker: '{speaker}')"
-            );
+            else
+            {
+                SpeechManager.Announce(text, mappedType);
+            }
         }
 
+        /// <summary>
+        /// Outputs poem text to the screen reader.
+        /// </summary>
+        /// <param name="text">The poem text to speak.</param>
         public static void OutputPoemText(string text)
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrEmpty(text))
                 return;
-            string formattedText = FormatTextForScreenReader("", text, TextType.Poem);
 
-            _currentDialogueSpeaker = "";
-            _currentDialogueText = text;
-            _currentDialogueType = TextType.Poem;
-
-            SpeakText(formattedText);
-            ScreenReaderMod.Logger?.Msg($"[Poem] Speaking: '{formattedText}'");
+            SpeechManager.Announce(text, GameTextType.Poem);
         }
-
-        private static string FormatTextForScreenReader(
-            string speaker,
-            string text,
-            TextType textType
-        )
-        {
-            text = TextProcessor.CleanText(text);
-
-            switch (textType)
-            {
-                case TextType.Dialogue:
-                    if (!string.IsNullOrWhiteSpace(speaker))
-                        return $"{speaker}: {text}";
-                    return text;
-                default:
-                    return text;
-            }
-        }
-    }
-
-    public enum TextType
-    {
-        Dialogue,
-        MenuChoice,
-        Menu,
-        SystemMessage,
-        Narrator,
-        PoetryGame,
-        FileBrowser,
-        Poem,
-        Settings,
-        Mail,
-        Jukebox,
     }
 }

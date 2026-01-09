@@ -7,6 +7,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MelonAccessibilityLib" Version="1.1.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="MelonLoader">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Doki Doki Literature Club Plus\MelonLoader\net6\MelonLoader.dll</HintPath>
     </Reference>
@@ -44,10 +47,16 @@
   <Target Name="CopyModAfterBuild" AfterTargets="Build">
     <!-- Display a message in the build output -->
     <Message Text="--- Copying $(ProjectName).dll to game folder ---" Importance="high" />
-    <!-- Perform the copy operation -->
+    <!-- Copy the mod DLL -->
     <Copy
       SourceFiles="$(TargetPath)"
       DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\Doki Doki Literature Club Plus\Mods\"
+    />
+    <!-- Copy MelonAccessibilityLib.dll -->
+    <Message Text="--- Copying MelonAccessibilityLib.dll to game folder ---" Importance="high" />
+    <Copy
+      SourceFiles="$(TargetDir)MelonAccessibilityLib.dll"
+      DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\Doki Doki Literature Club Plus\"
     />
   </Target>
 </Project>

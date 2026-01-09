@@ -20,7 +20,7 @@ using MelonLoader;
 [assembly: MelonInfo(
     typeof(DDLCScreenReaderMod.ScreenReaderMod),
     "DDLC Screen Reader Mod",
-    "1.1.0",
+    "1.2.0",
     "LordLuceus"
 )]
 [assembly: MelonGame("Team Salvato", "Doki Doki Literature Club Plus")]

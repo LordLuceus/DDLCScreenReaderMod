@@ -115,7 +115,7 @@ namespace DDLCScreenReaderMod
             {
                 if (!string.IsNullOrWhiteSpace(messageStr))
                 {
-                    string processedMessage = TextProcessor.CleanText(messageStr);
+                    string processedMessage = TextHelper.CleanText(messageStr);
                     ScreenReaderMod.Logger?.Msg($"Confirmation dialog message: {processedMessage}");
                     ClipboardUtils.OutputGameText("", processedMessage, TextType.SystemMessage);
                 }

@@ -178,8 +178,8 @@ namespace DDLCScreenReaderMod
                     string bodyContent = Renpy.Text.GetLocalisedString(mic.Mail.Body);
                     if (!string.IsNullOrWhiteSpace(bodyContent))
                     {
-                        // Clean the body text using the existing TextProcessor
-                        string cleanedBody = TextProcessor.CleanText(bodyContent);
+                        // Clean the body text using TextHelper
+                        string cleanedBody = TextHelper.CleanText(bodyContent);
 
                         // Announce the mail body content
                         ClipboardUtils.OutputGameText("", cleanedBody, TextType.Mail);

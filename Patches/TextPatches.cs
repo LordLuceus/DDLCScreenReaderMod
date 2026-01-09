@@ -54,8 +54,8 @@ namespace DDLCScreenReaderMod
                     return;
                 }
 
-                // Clean the text using the mod's existing text processor
-                string cleanedText = TextProcessor.CleanText(rawText);
+                // Clean the text using TextHelper
+                string cleanedText = TextHelper.CleanText(rawText);
 
                 if (string.IsNullOrWhiteSpace(cleanedText))
                 {
