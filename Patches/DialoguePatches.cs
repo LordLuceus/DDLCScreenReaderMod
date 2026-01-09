@@ -41,8 +41,9 @@ namespace DDLCScreenReaderMod
                 return "";
 
             // Normalize various dash representations to detect duplicates
-            return text.Replace("—", "--") // em dash to double dash
-                .Replace("–", "-") // en dash to single dash
+            // The game often converts " - " to "—" (em dash without spaces)
+            return text.Replace("—", " - ") // em dash to spaced hyphen
+                .Replace("–", " - ") // en dash to spaced hyphen
                 .Trim();
         }
 
