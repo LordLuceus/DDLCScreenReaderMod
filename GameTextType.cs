@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using LibTextType = MelonAccessibilityLib.TextType;
+using LibTextType = UnityAccessibilityLib.TextType;
 
 namespace DDLCScreenReaderMod
 {

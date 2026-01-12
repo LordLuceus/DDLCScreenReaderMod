@@ -1,8 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
 using HarmonyLib;
-using MelonAccessibilityLib;
 using MelonLoader;
+using UnityAccessibilityLib;
 using UnityEngine;
 
 namespace DDLCScreenReaderMod
