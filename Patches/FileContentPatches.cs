@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.IO;
 using HarmonyLib;
 using RenpyLauncher;
 using UnityEngine;
@@ -10,36 +8,95 @@ namespace DDLCScreenReaderMod
     [HarmonyPatch]
     public static class FileContentPatches
     {
-        // Patch FileViewerApp to provide file content accessibility
+        // Navigation state
+        private static int currentLineIndex = -1;
+        private static string[] fileLines = null;
+        private static FileViewerApp activeFileViewer = null;
+        private static string currentFileName = null;
+
+        /// <summary>
+        /// Returns true if the file viewer is active and showing text content.
+        /// </summary>
+        public static bool IsFileViewerActive
+        {
+            get
+            {
+                if (activeFileViewer == null || fileLines == null)
+                    return false;
+
+                // Check if the file viewer window is still active
+                return activeFileViewer.Window != null && activeFileViewer.Window.activeInHierarchy;
+            }
+        }
+
         [HarmonyPatch(typeof(FileViewerApp), "OnAppStart")]
         [HarmonyPostfix]
         public static void FileViewerApp_OnAppStart_Postfix(FileViewerApp __instance)
         {
             try
             {
-                // Extract file content
-                string fileName = GetFileNameFromPath(FileBrowserApp.ViewedPath);
-                string fileContent = ExtractFileContent();
-                bool isTextFile = IsTextFile();
+                // Reset state
+                activeFileViewer = __instance;
+                currentFileName = GetFileNameFromPath(FileBrowserApp.ViewedPath);
 
-                if (!string.IsNullOrWhiteSpace(fileContent))
+                // Only support line navigation for text files
+                if (!IsTextFile())
                 {
-                    // Only open text files in Notepad and announce accordingly
-                    if (isTextFile && TryOpenInNotepad(fileName, fileContent))
-                    {
-                        string notepadAnnouncement =
-                            $"File opened: {fileName}. Content opened in Notepad.";
-                        ClipboardUtils.OutputGameText(
-                            "",
-                            notepadAnnouncement,
-                            TextType.FileBrowser
-                        );
-                    }
+                    fileLines = null;
+                    currentLineIndex = -1;
 
-                    ScreenReaderMod.Logger?.Msg(
-                        $"File content accessed: {fileName} ({fileContent.Length} characters)"
-                    );
+                    // Announce non-text file
+                    string message = $"File opened: {currentFileName}. This is not a text file.";
+                    ClipboardUtils.OutputGameText("", message, TextType.FileBrowser);
+                    ScreenReaderMod.Logger?.Msg($"Non-text file opened: {currentFileName}");
+                    return;
                 }
+
+                // Extract and split file content into lines
+                string fileContent = ExtractFileContent();
+                if (string.IsNullOrWhiteSpace(fileContent))
+                {
+                    fileLines = null;
+                    currentLineIndex = -1;
+                    ClipboardUtils.OutputGameText(
+                        "",
+                        $"File opened: {currentFileName}. File is empty.",
+                        TextType.FileBrowser
+                    );
+                    return;
+                }
+
+                // Split content into lines, removing empty lines
+                fileLines = fileContent.Split(
+                    new[] { '\r', '\n' },
+                    StringSplitOptions.RemoveEmptyEntries
+                );
+
+                if (fileLines.Length == 0)
+                {
+                    fileLines = null;
+                    currentLineIndex = -1;
+                    ClipboardUtils.OutputGameText(
+                        "",
+                        $"File opened: {currentFileName}. File is empty.",
+                        TextType.FileBrowser
+                    );
+                    return;
+                }
+
+                // Start at the first line
+                currentLineIndex = 0;
+
+                // Announce file opened with navigation instructions
+                string openMessage =
+                    $"File opened: {currentFileName}. {fileLines.Length} lines. Use up and down arrows to navigate.";
+                ClipboardUtils.OutputGameText("", openMessage, TextType.FileBrowser);
+                ScreenReaderMod.Logger?.Msg(
+                    $"File content opened: {currentFileName} ({fileLines.Length} lines)"
+                );
+
+                // Announce the first line
+                AnnounceCurrentLine();
             }
             catch (Exception ex)
             {
@@ -47,6 +104,95 @@ namespace DDLCScreenReaderMod
                     $"Error in FileViewerApp_OnAppStart_Postfix: {ex.Message}"
                 );
             }
+        }
+
+        [HarmonyPatch(typeof(FileViewerApp), "OnAppClose")]
+        [HarmonyPostfix]
+        public static void FileViewerApp_OnAppClose_Postfix(FileViewerApp __instance)
+        {
+            try
+            {
+                activeFileViewer = null;
+                currentLineIndex = -1;
+                fileLines = null;
+                currentFileName = null;
+
+                ScreenReaderMod.Logger?.Msg("File viewer closed");
+            }
+            catch (Exception ex)
+            {
+                ScreenReaderMod.Logger?.Error(
+                    $"Error in FileViewerApp_OnAppClose_Postfix: {ex.Message}"
+                );
+            }
+        }
+
+        public static void NavigateToPrevious()
+        {
+            if (!IsFileViewerActive || fileLines == null || fileLines.Length == 0)
+                return;
+
+            // Up arrow = previous line = lower index
+            if (currentLineIndex > 0)
+            {
+                currentLineIndex--;
+                AnnounceCurrentLine();
+            }
+            else
+            {
+                ClipboardUtils.OutputGameText("", "Beginning of file", TextType.FileBrowser);
+            }
+        }
+
+        public static void NavigateToNext()
+        {
+            if (!IsFileViewerActive || fileLines == null || fileLines.Length == 0)
+                return;
+
+            // Down arrow = next line = higher index
+            if (currentLineIndex < fileLines.Length - 1)
+            {
+                currentLineIndex++;
+                AnnounceCurrentLine();
+            }
+            else
+            {
+                ClipboardUtils.OutputGameText("", "End of file", TextType.FileBrowser);
+            }
+        }
+
+        public static void NavigateToFirst()
+        {
+            if (!IsFileViewerActive || fileLines == null || fileLines.Length == 0)
+                return;
+
+            currentLineIndex = 0;
+            AnnounceCurrentLine();
+        }
+
+        public static void NavigateToLast()
+        {
+            if (!IsFileViewerActive || fileLines == null || fileLines.Length == 0)
+                return;
+
+            currentLineIndex = fileLines.Length - 1;
+            AnnounceCurrentLine();
+        }
+
+        private static void AnnounceCurrentLine()
+        {
+            if (fileLines == null || currentLineIndex < 0 || currentLineIndex >= fileLines.Length)
+                return;
+
+            string line = fileLines[currentLineIndex];
+            string cleanedLine = TextHelper.CleanText(line);
+
+            // Announce line with position info
+            int lineNumber = currentLineIndex + 1;
+            ScreenReaderMod.Logger?.Msg(
+                $"File line {lineNumber}/{fileLines.Length}: {cleanedLine}"
+            );
+            ClipboardUtils.OutputGameText("", cleanedLine, TextType.FileBrowser);
         }
 
         private static bool IsTextFile()
@@ -84,51 +230,13 @@ namespace DDLCScreenReaderMod
 
                     return content;
                 }
-                else
-                {
-                    // Non-text file types (images, audio) - provide description
-                    string fileName = GetFileNameFromPath(FileBrowserApp.ViewedPath);
-                    return $"[This is a non-text file: {fileName}. Content cannot be copied to text format.]";
-                }
+
+                return null;
             }
             catch (Exception ex)
             {
                 ScreenReaderMod.Logger?.Error($"Error extracting file content: {ex.Message}");
-                return "[Error: Unable to extract file content.]";
-            }
-        }
-
-        private static bool TryOpenInNotepad(string fileName, string content)
-        {
-            try
-            {
-                // Create temporary file
-                string tempDir = Path.GetTempPath();
-                string tempFileName =
-                    $"DDLC_{SanitizeFileName(fileName)}_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
-                string tempFilePath = Path.Combine(tempDir, tempFileName);
-
-                // Write content to temporary file
-                File.WriteAllText(tempFilePath, content, System.Text.Encoding.UTF8);
-
-                // Open in Notepad
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = "notepad.exe",
-                    Arguments = $"\"{tempFilePath}\"",
-                    UseShellExecute = true,
-                };
-
-                Process.Start(startInfo);
-
-                ScreenReaderMod.Logger?.Msg($"Opened file in Notepad: {tempFilePath}");
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error($"Error opening file in Notepad: {ex.Message}");
-                return false;
+                return null;
             }
         }
 
@@ -154,33 +262,6 @@ namespace DDLCScreenReaderMod
             {
                 ScreenReaderMod.Logger?.Error($"Error getting file name from path: {ex.Message}");
                 return "Unknown File";
-            }
-        }
-
-        private static string SanitizeFileName(string fileName)
-        {
-            try
-            {
-                // Remove invalid file name characters
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                foreach (char c in invalidChars)
-                {
-                    fileName = fileName.Replace(c, '_');
-                }
-
-                // Remove extension if present and add .txt
-                fileName = Path.GetFileNameWithoutExtension(fileName);
-
-                // Limit length
-                if (fileName.Length > 50)
-                    fileName = fileName.Substring(0, 50);
-
-                return fileName;
-            }
-            catch (Exception ex)
-            {
-                ScreenReaderMod.Logger?.Error($"Error sanitizing file name: {ex.Message}");
-                return "DDLCFile";
             }
         }
     }

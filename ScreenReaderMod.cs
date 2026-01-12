@@ -153,6 +153,30 @@ namespace DDLCScreenReaderMod
                         HistoryPatches.NavigateToNext();
                     }
                 }
+
+                // File viewer navigation
+                if (FileContentPatches.IsFileViewerActive)
+                {
+                    bool ctrlHeld =
+                        Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+
+                    if (ctrlHeld && Input.GetKeyDown(KeyCode.Home))
+                    {
+                        FileContentPatches.NavigateToFirst();
+                    }
+                    else if (ctrlHeld && Input.GetKeyDown(KeyCode.End))
+                    {
+                        FileContentPatches.NavigateToLast();
+                    }
+                    else if (Input.GetKeyDown(KeyCode.UpArrow))
+                    {
+                        FileContentPatches.NavigateToPrevious();
+                    }
+                    else if (Input.GetKeyDown(KeyCode.DownArrow))
+                    {
+                        FileContentPatches.NavigateToNext();
+                    }
+                }
             }
             catch (Exception ex)
             {
