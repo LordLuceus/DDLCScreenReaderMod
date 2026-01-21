@@ -3,7 +3,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class GalleryPatches

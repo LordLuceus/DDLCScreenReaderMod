@@ -6,31 +6,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Build Commands
 
-- **Build the project**: `dotnet build` or `MSBuild DDLCScreenReaderMod.csproj`
+- **Build the project**: `dotnet build` or `MSBuild DDLCPlusAccess.csproj`
 - **Clean build**: `dotnet clean && dotnet build`
 - **Release build**: `dotnet build --configuration Release`
 
 ### Testing Installation
 
-- Post-build automatically copies `DDLCScreenReaderMod.dll` and `MelonAccessibilityLib.dll` to the DDLC Plus `Mods` folder
+- Post-build automatically copies `DDLCPlusAccess.dll` and `UnityAccessibilityLib.dll` to the DDLC Plus `Mods` folder
 - Launch DDLC Plus with MelonLoader to test
 
 ## Project Architecture
 
 ### Core Components
 
-**ScreenReaderMod.cs** - Main mod entry point (MelonMod)
+**Main.cs** - Main mod entry point (MelonMod)
 
-- Initializes MelonAccessibilityLib (`SpeechManager`, `TextCleaner`, `AccessibilityLog`)
+- Initializes UnityAccessibilityLib (`SpeechManager`, `TextCleaner`, `AccessibilityLog`)
 - Registers Ren'Py/TMP-specific text cleaning patterns with `TextCleaner.AddRegexReplacement()`
 - Handles scene loading events
 - Implements hotkeys:
   - **R key**: Repeat last dialogue (`SpeechManager.RepeatLast()`)
   - **C key**: Announce data collection percentage (in Settings app)
   - **P key**: Announce jukebox position (in Jukebox app)
-  - **Up/Down arrows**: Navigate history entries (when history screen has focus)
+  - **Up/Down arrows**: Navigate history entries (when history screen has focus) or lines in file content viewer
 
-**ClipboardUtils.cs** - Thin wrapper around MelonAccessibilityLib's SpeechManager
+**ClipboardUtils.cs** - Thin wrapper around UnityAccessibilityLib's SpeechManager
 
 - `OutputGameText(speaker, text, textType)` → `SpeechManager.Output()` or `SpeechManager.Announce()`
 - `OutputPoemText(text)` → `SpeechManager.Announce()`
@@ -43,7 +43,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Defines custom types: PoetryGame, FileBrowser, Poem, Settings, Mail, Jukebox
 - Provides `GetTextTypeNames()` for logging and `ShouldStoreForRepeat()` predicate
 
-**MelonLoggerAdapter.cs** - Bridges MelonLoader logging to MelonAccessibilityLib
+**MelonLoggerAdapter.cs** - Bridges MelonLoader logging to UnityAccessibilityLib
 
 **TextHelper.cs** - Supplementary text processing utilities
 
@@ -66,23 +66,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The mod uses Harmony to patch game methods. All patches output text via `ClipboardUtils.OutputGameText()`:
 
-| Patch File | Purpose |
-|------------|---------|
-| `DialoguePatches.cs` | Character dialogue via `RenpyWindowManager.Say` patch |
-| `HistoryPatches.cs` | History screen navigation with Up/Down arrow keys |
-| `MenuPatches.cs` | Menu navigation, choices, settings |
-| `LauncherPatches.cs` | DDLC Plus launcher accessibility |
-| `FileBrowserPatches.cs` | File browser navigation |
-| `FileContentPatches.cs` | File content viewing |
-| `PoetryPatches.cs` | Poetry minigame |
-| `PoemPatches.cs` | Poem reading |
-| `SideStoriesPatches.cs` | Side stories navigation |
-| `GalleryPatches.cs` | Gallery navigation and descriptions |
-| `ImagePatches.cs` | Background/CG announcements |
-| `JukeboxPatches.cs` | Music player |
-| `MailPatches.cs` | Email application |
-| `SelectorPatches.cs` | Generic selector UI |
-| `TextPatches.cs` | Fallback text capture |
+| Patch File              | Purpose                                               |
+| ----------------------- | ----------------------------------------------------- |
+| `DialoguePatches.cs`    | Character dialogue via `RenpyWindowManager.Say` patch |
+| `HistoryPatches.cs`     | History screen navigation with Up/Down arrow keys     |
+| `MenuPatches.cs`        | Menu navigation, choices, settings                    |
+| `LauncherPatches.cs`    | DDLC Plus launcher accessibility                      |
+| `FileBrowserPatches.cs` | File browser navigation                               |
+| `FileContentPatches.cs` | File content viewing                                  |
+| `PoetryPatches.cs`      | Poetry minigame                                       |
+| `PoemPatches.cs`        | Poem reading                                          |
+| `SideStoriesPatches.cs` | Side stories navigation                               |
+| `GalleryPatches.cs`     | Gallery navigation and descriptions                   |
+| `ImagePatches.cs`       | Background/CG announcements                           |
+| `JukeboxPatches.cs`     | Music player                                          |
+| `MailPatches.cs`        | Email application                                     |
+| `SelectorPatches.cs`    | Generic selector UI                                   |
+| `TextPatches.cs`        | Fallback text capture                                 |
 
 ### Text Output Types
 
@@ -102,7 +102,7 @@ Defined in `GameTextType.cs` (legacy enum in same file for patch compatibility):
 
 ### Text Cleaning
 
-Text cleaning is handled by MelonAccessibilityLib's `TextCleaner` with custom patterns registered in `ScreenReaderMod.RegisterTextCleanerPatterns()`:
+Text cleaning is handled by UnityAccessibilityLib's `TextCleaner` with custom patterns registered in `ScreenReaderMod.RegisterTextCleanerPatterns()`:
 
 - Ren'Py tags: `{w}`, `{nw}`, `{clear}`, etc. (pattern: `\{[^}]*\}`)
 - TMP square bracket tags: `[color=...]`, `[size=...]`, `[b]`, `[i]`, etc.
@@ -111,7 +111,7 @@ Text cleaning is handled by MelonAccessibilityLib's `TextCleaner` with custom pa
 ## Dependencies
 
 - **.NET Framework 4.7.2** target
-- **MelonAccessibilityLib** (NuGet) - Speech output, text cleaning, duplicate detection
+- **UnityAccessibilityLib** (NuGet) - Speech output, text cleaning, duplicate detection
 - **MelonLoader** - Mod loading framework
 - **Harmony** - Runtime method patching
 - **Unity Engine** - Game engine APIs

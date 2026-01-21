@@ -2,7 +2,7 @@ using HarmonyLib;
 using RenpyLauncher;
 using UnityEngine.UI;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class SideStoriesPatches

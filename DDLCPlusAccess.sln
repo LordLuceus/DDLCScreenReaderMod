@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDLCScreenReaderMod", "DDLCScreenReaderMod.csproj", "{A8A9D1E0-58B2-B902-8BA3-F804524841CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDLCPlusAccess", "DDLCPlusAccess.csproj", "{199CF3BC-7BCC-9B99-D43F-57022EEAC39D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,15 +10,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A8A9D1E0-58B2-B902-8BA3-F804524841CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8A9D1E0-58B2-B902-8BA3-F804524841CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8A9D1E0-58B2-B902-8BA3-F804524841CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8A9D1E0-58B2-B902-8BA3-F804524841CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{199CF3BC-7BCC-9B99-D43F-57022EEAC39D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{199CF3BC-7BCC-9B99-D43F-57022EEAC39D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{199CF3BC-7BCC-9B99-D43F-57022EEAC39D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{199CF3BC-7BCC-9B99-D43F-57022EEAC39D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {541EB199-3975-4FA3-A29B-880D4774025C}
+		SolutionGuid = {56B1D265-D732-4A91-847B-99F76B0D6B98}
 	EndGlobalSection
 EndGlobal

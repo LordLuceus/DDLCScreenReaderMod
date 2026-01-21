@@ -1,6 +1,6 @@
 using DDLC;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     public static class SpeakerMapping
     {

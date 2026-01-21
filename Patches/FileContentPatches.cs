@@ -3,7 +3,7 @@ using HarmonyLib;
 using RenpyLauncher;
 using UnityEngine;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class FileContentPatches

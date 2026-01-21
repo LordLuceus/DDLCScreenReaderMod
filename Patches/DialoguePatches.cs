@@ -3,7 +3,7 @@ using RenpyParser;
 using TMPro;
 using UnityEngine;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class DialoguePatches

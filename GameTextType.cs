@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using LibTextType = UnityAccessibilityLib.TextType;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     /// <summary>
     /// Defines text type constants that map to MelonAccessibilityLib's TextType system.

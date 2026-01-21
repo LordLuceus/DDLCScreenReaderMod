@@ -1,7 +1,7 @@
 using MelonLoader;
 using UnityAccessibilityLib;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     public class MelonLoggerAdapter : IAccessibilityLogger
     {

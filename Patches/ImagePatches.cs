@@ -3,7 +3,7 @@ using RenpyParser;
 using RenPyParser.Transforms;
 using UnityEngine;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class ImagePatches

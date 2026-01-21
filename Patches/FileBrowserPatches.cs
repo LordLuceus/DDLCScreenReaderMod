@@ -3,7 +3,7 @@ using System.IO;
 using HarmonyLib;
 using RenpyLauncher;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class FileBrowserPatches

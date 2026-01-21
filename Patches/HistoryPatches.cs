@@ -7,7 +7,7 @@ using RenpyParser;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class HistoryPatches

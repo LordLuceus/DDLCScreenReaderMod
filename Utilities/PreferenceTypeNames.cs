@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using RenpyParser;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     public static class PreferenceTypeNames
     {

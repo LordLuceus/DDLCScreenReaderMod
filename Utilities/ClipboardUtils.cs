@@ -1,6 +1,6 @@
 using UnityAccessibilityLib;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     /// <summary>
     /// Wrapper around MelonAccessibilityLib's SpeechManager that maintains API compatibility

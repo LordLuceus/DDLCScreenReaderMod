@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     public static class BackgroundDescriptions
     {

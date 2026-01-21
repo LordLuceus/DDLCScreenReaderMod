@@ -1,6 +1,6 @@
 using UnityAccessibilityLib;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     /// <summary>
     /// Helper methods for text processing that supplement the library's TextCleaner.

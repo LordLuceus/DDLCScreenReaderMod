@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GamePath>C:\Program Files (x86)\Steam\steamapps\common\Doki Doki Literature Club Plus</GamePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>$(GamePath)\MelonLoader\net6\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(GamePath)\MelonLoader\net6\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="DDLC">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\DDLC.dll</HintPath>
+    </Reference>
+    <Reference Include="TMPro">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityPS">
+      <HintPath>$(GamePath)\Doki Doki Literature Club Plus_Data\Managed\UnityPS.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="UnityAccessibilityLib" Version="2.0.0" />
+  </ItemGroup>
+  <Target Name="CopyModAfterBuild" AfterTargets="Build">
+    <!-- Display a message in the build output -->
+    <Message Text="--- Copying $(ProjectName).dll to game folder ---" Importance="high" />
+    <!-- Copy the mod DLL -->
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GamePath)\Mods\" />
+    <!-- Copy UnityAccessibilityLib.dll -->
+    <Message Text="--- Copying UnityAccessibilityLib.dll to game folder ---" Importance="high" />
+    <Copy SourceFiles="$(TargetDir)UnityAccessibilityLib.dll" DestinationFolder="$(GamePath)\" />
+  </Target>
+</Project>

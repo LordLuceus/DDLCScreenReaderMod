@@ -5,7 +5,7 @@ using MelonLoader;
 using UnityAccessibilityLib;
 using UnityEngine;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     public class ScreenReaderMod : MelonMod
     {

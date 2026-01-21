@@ -4,7 +4,7 @@ using RenpyLauncher;
 using TMPro;
 using UnityEngine.UI;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class LauncherPatches

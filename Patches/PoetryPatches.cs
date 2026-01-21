@@ -2,7 +2,7 @@ using DDLC.Screens.PoetryGameScreen;
 using HarmonyLib;
 using UnityEngine.EventSystems;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class PoetryPatches

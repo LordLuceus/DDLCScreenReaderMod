@@ -3,7 +3,7 @@ using RenpyParser;
 using RenPyParser.Screens.PoemScreen;
 using UnityEngine;
 
-namespace DDLCScreenReaderMod
+namespace DDLCPlusAccess
 {
     [HarmonyPatch]
     public static class PoemPatches
