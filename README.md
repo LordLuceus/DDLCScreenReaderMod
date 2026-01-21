@@ -42,25 +42,32 @@ A comprehensive accessibility mod for **Doki Doki Literature Club Plus** that pr
 ### Prerequisites
 
 - **Doki Doki Literature Club Plus** (Steam version)
-- **MelonLoader** installed in DDLC Plus directory
 - Windows operating system
 
-### Installation Steps
+### Easy Installation (Recommended)
 
-1. Download `DDLCPlusAccess.dll` and `UnityAccessibilityLib.dll` from the latest release
-2. Copy `DDLCPlusAccess.dll` to your DDLC Plus `Mods` folder:
+Use the **[AccessMods Installer](https://github.com/AccessMods/AccessModsInstaller/releases)** for one-click installation:
 
-   ```
-   [DDLC Plus Install Path]\Mods\DDLCPlusAccess.dll
-   ```
+1. Download `AccessModsInstaller.exe` from the [releases page](https://github.com/AccessMods/AccessModsInstaller/releases)
+2. Run the installer and select **Doki Doki Literature Club Plus**
+3. The installer will automatically:
+   - Find your game installation
+   - Install MelonLoader if needed
+   - Download and install the latest mod files
 
-3. Copy `UnityAccessibilityLib.dll` to your DDLC Plus root folder:
+### Manual Installation
 
-   ```
-   [DDLC Plus Install Path]\UnityAccessibilityLib.dll
-   ```
+If you prefer to install manually, you'll also need **MelonLoader** installed in your DDLC Plus directory.
 
-4. Launch DDLC Plus - MelonLoader will automatically load the mod
+#### Installation Steps
+
+1. Download the mod ZIP from the [latest release](https://github.com/AccessMods/DDLCPlusAccess/releases)
+2. Extract the contents and copy files to your DDLC Plus installation:
+   - `DDLCPlusAccess.dll` → `[DDLC Plus Install Path]\Mods\`
+   - `UnityAccessibilityLib.dll` → `[DDLC Plus Install Path]\`
+   - `UniversalSpeech.dll` → `[DDLC Plus Install Path]\`
+   - `nvdaControllerClient.dll` → `[DDLC Plus Install Path]\`
+3. Launch DDLC Plus - MelonLoader will automatically load the mod
 
 ### Verification
 

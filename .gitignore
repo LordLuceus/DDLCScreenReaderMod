@@ -321,3 +321,7 @@ MigrationBackup/
 
 # Claude Code
 .claude/
+
+# Letta Code
+.letta/*
+!.letta/settings.json
